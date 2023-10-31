@@ -1,0 +1,23 @@
+name: Continuous integration
+
+on:
+  pull_request:
+    branches:
+      - development
+      - uat
+      - release
+      - main
+      
+jobs:
+  CI:
+    uses: hdfcltd/ME1-central-cicd/.github/workflows/ci.yml@main
+    secrets:
+      MULE_KEY_DEV: ${{ secrets.MULE_KEY_DEV }}
+      MULE_KEY_UAT: ${{ secrets.MULE_KEY_UAT }}
+      MULE_KEY_PRE_PROD: ${{ secrets.MULE_KEY_PRE_PROD }}
+      MULE_KEY_PROD: ${{ secrets.MULE_KEY_PROD }}
+      
+  Sonar-Analysis:
+    needs: CI
+    uses: hdfcltd/ME1-central-cicd/.github/workflows/sonar.yml@main
+    secrets: inherit

@@ -1,0 +1,60 @@
+#%RAML 1.0 Library
+types:
+  output:
+    type: object
+    properties:
+      timestamp:
+        type: string
+        required: false
+        minLength: 1
+        maxLength: 50
+        example: "hdjjdkk"
+      correlationId:
+        type: string
+        required: false
+        minLength: 1
+        maxLength: 50
+        example: "pqrstd"
+      appName:
+        type: string
+        required: false
+        minLength: 1
+        maxLength: 50
+        example: "security"
+      statusCode:
+        type: number
+        required: false
+        minimum: 101
+        maximum: 101
+        example: 101 
+      statusMessage:
+        type: string
+        required: false
+        minLength: 1
+        maxLength: 50
+        example: "Success"
+      Response:
+        type: array
+        items:
+          properties:
+            norms:
+              type: integer
+              required: false
+            isAdditionalDataPresent:
+              type: boolean
+              required: false
+            AdditionalData:
+              type: array
+              items:
+                properties:
+                  keyCode:
+                    type: string
+                    required: false
+                  keyDesc:
+                    type: string
+                    required: false
+            
+        
+          
+          
+          

@@ -1,0 +1,34 @@
+{
+  "osubmenudesc": "Bonus/Incentive",
+  "oadditionalinfo": "Y",
+  "ocursor": [
+    {
+      "AMOUNT": null,
+      "INC_OBLIG_SRNO": null,
+      "INCOME_DETAIL_SUBMENU_SRNO": null,
+      "MONTH_YEAR": "JUN-2023",
+      "TYPE": "BON",
+      "SERIAL_NO": 669967587,
+      "CREDIT_APPRAISAL_SRNO": null
+    },
+    {
+      "AMOUNT": null,
+      "INC_OBLIG_SRNO": null,
+      "INCOME_DETAIL_SUBMENU_SRNO": null,
+      "MONTH_YEAR": "JUN-2022",
+      "TYPE": "BON",
+      "SERIAL_NO": 669967587,
+      "CREDIT_APPRAISAL_SRNO": null
+    },
+    {
+      "AMOUNT": null,
+      "INC_OBLIG_SRNO": null,
+      "INCOME_DETAIL_SUBMENU_SRNO": null,
+      "MONTH_YEAR": "JUN-2021",
+      "TYPE": "BON",
+      "SERIAL_NO": 669967587,
+      "CREDIT_APPRAISAL_SRNO": null
+    }
+  ],
+  "oincnorms": 50.0
+}

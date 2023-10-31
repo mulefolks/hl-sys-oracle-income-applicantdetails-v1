@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:json-logger="http://www.mulesoft.org/schema/mule/json-logger" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/mule/json-logger/current/mule-json-logger.xsd">
+	<sub-flow name="impl-ilps-applicantIncomeListSub_Flow" doc:id="cb2b8e49-64b5-4422-bebe-59de008c8683" >
+		<logger level="INFO" doc:name="ilps_impl_Flow_Start_Logger" doc:id="a3a54c6d-9010-4ded-9590-e08875477aa4" message='"info: Implementation of ilps-master-pro-api-subFlow Start:: correrlationId: #[vars.vTrakingHeader.correlationId]'/>
+		<json-logger:logger doc:name="applicantIncomeListStartLogger" doc:id="b372999e-5aab-4a71-9999-1d72385ca27b" config-ref="JSON_Logger_Config" message='#["INFO: applicantIncomeList subflow input for CorrelationId :: " ++ (vars.vTrackingHeader.correlationId as String default "")]'>
+			<json-logger:content ><![CDATA[#[output application/json
+
+---
+payload]]]></json-logger:content>
+		</json-logger:logger>
+		<choice doc:name="Choice" doc:id="2f1db8b4-16c3-4b2b-9ac8-3847b71ed2d4" >
+			<when expression="#[(! isEmpty(attributes.queryParams.custNo)) and (! isEmpty(attributes.queryParams.fileNo))]">
+				<ee:transform doc:name="DW: QueryBuilderapplicantIncomeList" doc:id="496bbc3c-bf6c-44cc-bcca-362d38107009" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+{
+}]]></ee:set-payload>
+					</ee:message>
+					<ee:variables >
+						<ee:set-variable variableName="vquery" ><![CDATA[%dw 2.0
+output application/java
+---
+{"statement": "Select To_Char(Srno) As Srno,To_Char(Cust_No) As Appl_Cust_Number,Custname,Upper(Income_Source_Desc) Income_Source_Desc,Income_Source_Cd,Upper(Income_Type_Desc) Income_Type_Desc,Income_Type_Cd,Id.Period_From Fromperiod,
+Id.Period_To Toperiod,
+To_Char(Gross_Income) As Gross_Income,To_Char(Norm) As Norm,To_Char(Consi) As Consi,To_Char(Norm_Amount) As Norm_Amount,To_Char(Net_Amount) As Net_Amount,To_Char(Displayseq) As Displayseq,To_Char(Appraised_Income) As Appraised_Income,Nvl(Created_Source, 'MANUAL') As Created_Source From Cas.Income_Details Id Where Id.Fileno = "++ attributes.queryParams.fileNo ++ " And Cust_No = " ++ attributes.queryParams.custNo ++" Order By Displayseq;Select s.File_No,s.Loan_Scheme,Ilps.f_Get_Global_Cd_Desc('ILPS', 'SCH', s.Loan_Scheme) Loan_Repay_Desc From Ilps.Loan_Master m,Ilps.Loan_Summary s Where m.File_No = "++ attributes.queryParams.fileNo ++ " And s.File_No = m.File_No And s.Request_No = m.curr_req_no"
+}]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+				<flow-ref doc:name="Flow Reference" doc:id="02ed30e7-4740-4b15-9445-c24477295b04" name="impl-databaseinfoSub_Flow"/>
+				<json-logger:logger doc:name="applicantIncomeListDBOutputLogger" doc:id="ac18fdf6-50f3-4017-a6e3-6cfa1fd4a9ba" config-ref="JSON_Logger_Config" message='#["INFO: applicantIncomeListDatabase Output for CorrelationId :: " ++ (vars.vTrackingHeader.correlationId as String default "")]'>
+					<json-logger:content ><![CDATA[#[output application/json
+
+---
+payload]]]></json-logger:content>
+				</json-logger:logger>
+				<ee:transform doc:name="DW: response mapping" doc:id="6c992877-eb2c-4c3a-b292-118d1ed75ff5">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/java
+---
+{
+}]]></ee:set-payload>
+					</ee:message>
+					<ee:variables >
+						<ee:set-variable variableName="vapplicantIncomeList" ><![CDATA[%dw 2.0
+output application/json
+---
+payload map
+{
+    "sourceOfIncome": $.INCOME_SOURCE_CD,
+	"sourceOfIncomeDesc": $.INCOME_SOURCE_DESC,
+    "incomeType": $.INCOME_TYPE_CD,
+	"incomeTypeDesc": $.INCOME_TYPE_DESC,
+    "repaymentType" : payload.LOAN_REPAY_DESC[0],
+    "fromPeriod": ((($.FROMPERIOD) splitBy "T")[0]) default null,
+    "toPeriod": ((($.TOPERIOD) splitBy "T")[0]) default null,
+    "grossIncome": $.GROSS_INCOME,
+    "norms" : $.NORM,
+    "considerationPercentage": $.CONSI,
+    "appraisedIncome": $.APPRAISED_INCOME,
+    "netIncome": $.NET_AMOUNT,
+    "rowSrNo": $.SRNO,
+    "createdSource": $.CREATED_SOURCE
+} filter $.sourceOfIncome != null]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+				<ee:transform doc:name="DW: FinalPayload" doc:id="37fc6fb5-faa5-4cbc-9e46-2ec5aebb63ed" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+if((not isEmpty(vars.vapplicantIncomeList)))
+({"success": true,"timestamp": (now()>>'IST') as String {format:"dd-MM-yyyy hh:mm:ss a"}, 
+"correlationId": vars.vTrackingHeader.correlationId, 
+"appName": vars.vTrackingHeader.appName, 
+"statusCode": 101, 
+"Response": vars.vapplicantIncomeList
+})
+
+else
+({"success": true,"timestamp": (now()>>'IST') as String {format:"dd-MM-yyyy hh:mm:ss a"},
+ "correlationId": vars.vTrackingHeader.correlationId,
+ "appName": vars.vTrackingHeader.appName,
+ "statusCode":102,
+ "statusMsg": "Records Not Found"})]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</when>
+			<otherwise >
+				<ee:transform doc:name="Dw:Default Transform Message" doc:id="f43d8aad-d88b-47d8-89bb-c1f1823f6650" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"success": false,
+	"timestamp": (now()>>'IST') as String {format: "dd-MM-yyyy hh:mm:ss a"},
+	"correlationId": attributes.headers.correlationId,
+	"appName": attributes.headers.appName,
+	"statusCode": "103",
+	"statusMsg": "Invalid Search Criteria"
+}
+]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</otherwise>
+		</choice>
+		<logger level="INFO" doc:name="ilps_impl_Flow_End_Logger" doc:id="44246385-2975-4d5d-a38b-c17da54af3ff" message='"info: Implementation of ilps-master-pro-api-subFlow End:: correrlationId: #[vars.vTrakingHeader.correlationId]'/>
+	</sub-flow>
+</mule>

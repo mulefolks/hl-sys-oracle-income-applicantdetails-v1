@@ -1,0 +1,34 @@
+{
+  "success": "true",
+  "timestamp": "2022-09-30T11:54:58.544+05:30",
+  "correlationId": "nvcjdegmHD",
+  "appName": "ilps",
+  "statusCode": 101,
+  "statusMessage": "Success",
+  "Response": [
+    {
+      "verifyByuserId": "",
+      "verifyByUserName": "",
+      "verifiedOn":  "2015-09-30T18:50:39",
+      "verifyStatus": "",
+      "totalAppraisedIncome": "",
+      "incomeApplicantList": [
+        {
+          "applicantName": "",
+          "relationship": "",
+          "customerNo": "",
+          "capacity": "",
+          "totalNumberOfIncome": "",
+          "grossIncome": "",
+          "considerationPercentage": "",
+          "appraisedIncome": "",
+          "isNri": "",
+          "verifyByuserId": "",
+          "verifyOn": "2015-09-30T18:50:39",
+          "updatedBy": "",
+          "updatedOn": ""
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="impl-ilps-incomeApplicantUpdation_New-test-suite.xml" />
+	<munit:test name="impl-ilps-incomeApplicantUpdation_New-test-suite-imple-incomeApplicantUpdation_NewSub_FlowTest" doc:id="7ed66dfe-5705-4739-bdd4-45e910bc29b8" description="Test">
+		<munit:behavior >
+			<munit:set-event doc:name="Set Event" doc:id="4deb5d29-c266-4a0a-8ec6-28bf5dda93f7" >
+				<munit:payload value="#[readUrl('classpath://MUnit_TestCases/incomeApplicantUpdationRequest.json')]" encoding="UTF-8" mediaType="application/java" />
+			</munit:set-event>
+			<munit-tools:mock-when doc:name="Mock whenincomeApplicantUpdation_query" doc:id="702f49d9-a7c3-47e2-9337-d50f4e0ecd52" processor="db:update">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="incomeApplicantUpdation_query" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="c2726ca4-d557-4537-921a-933e990cabae" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="Database_Config_ilpsDB" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock whencountCheck" doc:id="64a7ab90-a8a6-4a67-945c-20e19fa54caf" processor="db:select">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="countCheck" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="fb9d4dc5-ebf7-402d-8f8b-c5e82ff630db" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="Database_Config_ilpsDB" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value='#[[&#10;	{&#10;		"COUNT(*)": 0&#10;	}&#10;]]' mediaType="application/java" encoding="UTF-8" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock whentotalIncomeAmount" doc:id="3766fefd-f00d-4ed5-b9d4-a3e4fdec4a65" processor="db:select">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="totalIncomeAmount" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="e1bf1176-82b9-4772-ae9f-805432111bed" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="Database_Config_ilpsDB" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:variables >
+						<munit-tools:variable key="totalIncomeAmount" value='#[[{"": ""}]]' mediaType="application/java" encoding="UTF-8" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock wheninsertIncomeSummary" doc:id="216d9b4c-9908-44f0-ba7a-bc002a91ca5b" processor="db:insert">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="insertIncomeSummary" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="86c4329f-8a93-4f35-9e54-d0e632e920bf" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="Database_Config_ilpsDB" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value='#[[{&#10;	"id": 12345&#10;}]]' />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to imple-incomeApplicantUpdation_NewSub_Flow" doc:id="03ee7461-7e79-4f9d-a1eb-7ab3a347691c" name="imple-incomeApplicantUpdation_NewSub_Flow"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="cf0a2447-e283-4a6c-8235-64e6be17b001" expression="#[! isEmpty(payload)]" is="#[MunitTools::notNullValue()]"/>
+		</munit:validation>
+	</munit:test>
+
+
+</mule>

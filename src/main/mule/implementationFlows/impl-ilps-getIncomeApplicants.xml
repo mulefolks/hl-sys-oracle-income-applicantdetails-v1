@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce" xmlns:json-logger="http://www.mulesoft.org/schema/mule/json-logger"
+	xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/mule/json-logger/current/mule-json-logger.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd">
+	<sub-flow name="impl-ilps-incomeApplicantsSub_Flow" doc:id="714e373e-a3c8-4bb5-aa84-232b126ae64a" >
+		<logger level="INFO" doc:name="ilps_impl_Flow_Start_Logger" doc:id="ca9b251f-69ca-43ec-bf97-e32460efa776" message='"info: Implementation of incomeApplicants subFlow Start:: correrlationId: #[vars.vTrakingHeader.correlationId]'/>
+		<json-logger:logger doc:name="incomeApplicantsStartlogger" doc:id="06d439a1-52ca-4068-8395-6acd5309172e" config-ref="JSON_Logger_Config" message='#["INFO: incomeApplicants DB Input for CorrelationId :: " ++ (vars.vTrackingHeader.correlationId as String default "")]'>
+			<json-logger:content ><![CDATA[#[output application/json
+
+---
+payload]]]></json-logger:content>
+		</json-logger:logger>
+		<choice doc:name="Choice" doc:id="04990f19-cd9b-41f8-a150-7fe5e5e91a4f" >
+			<when expression="#[(! isEmpty(attributes.queryParams.fileNo))]">
+				<ee:transform doc:name="incomeApplicants QueryBuilder" doc:id="528e32e3-8156-4b8d-a582-11853f406655">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/java
+---
+{
+}]]></ee:set-payload>
+					</ee:message>
+					<ee:variables >
+						<ee:set-variable variableName="vquery" ><![CDATA[ %dw 2.0
+output application/java
+---
+{"statement": "Select t.Inc_Upd_By Verifybyuserid,
+       t.Inc_Upd_Date Verifiedon,
+       t.Inc_Verify_Flag Verifystatus,
+       t.Tot_Income_Amt Totalappraisedincome,
+       (Select u.Full_Name
+          From Sy_Orgn_Users u
+         Where u.User_Id = t.Inc_Upd_By
+           And u.User_Status = 'A') Verifybyusername
+  From Ilps.Cas_Obl_Inc_Summary t
+ Where t.File_No = " ++ attributes.queryParams.fileNo as Number ++ ";
+Select r.File_No,
+       To_Char(t.Cust_No) As Appl_Cust_Number,
+       t.Cust_No,
+       c.Cust_Name || ' (' || r.Capacity || ')' Custname,
+       r.Capacity,
+       r.Rel_To_Borr,
+       Case
+         When r.Capacity In ('B', 'C') Then
+          Nvl(Ilps.f_Get_Global_Cd_Desc('ILPS',
+                                        'BORR_RELATION',
+                                        r.Rel_To_Borr),
+              Case
+                When r.Capacity = 'B' Then
+                 'MAIN APPLICANT'
+                Else
+                 r.Rel_To_Borr
+              End)
+         Else
+          Null
+       End Rel_To_Borr_Desc,
+       c.Nri_Flag,
+       To_Char(t.Net_Income_Amt) As Net_Income_Amt,
+       To_Char(t.Cust_Appraised_Inc) As Appraised_Income_Amt,
+       To_Char(t.Consi) As Consi,
+       To_Char(t.Cust_Appraised_Inc) As Cust_Appraised_Inc,
+       Nvl(t.Updated_Dt, t.Created_Dt) As Updatedon,
+       Nvl(t.Updated_By, t.Created_By) Updatedby,
+       Count(*) As No_Of_Incomes
+  From Cas.Income_Details d,
+       Cas.Income_Appraised_Details t,
+       Sy_Cust_Loan_Relation        r,
+       Sy_Customer_Id               c
+ Where t.File_No = " ++ attributes.queryParams.fileNo as Number ++ "
+   And r.File_No = t.File_No
+   And r.Cust_Number = t.Cust_No
+   And c.Cust_Number = r.Cust_Number
+   And d.Fileno = t.File_No
+   And d.Cust_No = t.Cust_No
+   And d.Consi > 0
+   And Trunc(Nvl(d.Period_From, Sysdate)) <= Trunc(d.Created_Dt)
+ Group By r.File_No,
+          t.Cust_No,
+          c.Cust_Name,
+          r.Capacity,
+          r.Rel_To_Borr,
+          c.Nri_Flag,
+          To_Char(t.Net_Income_Amt),
+          To_Char(t.Cust_Appraised_Inc),
+          To_Char(t.Consi),
+          To_Char(t.Cust_Appraised_Inc),
+          Nvl(t.Updated_Dt, t.Created_Dt),
+          Nvl(t.Updated_By, t.Created_By)
+ Order By Capacity, 15"
+}]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+				<json-logger:logger doc:name="incomeApplicants DB InputLogger" doc:id="d6346da7-e96e-4c7b-b0ec-d5b81d1bc172" config-ref="JSON_Logger_Config" message='#["INFO: incomeApplicants DB Input for CorrelationId :: " ++ (vars.vTrackingHeader.correlationId as String default "")]'>
+					<json-logger:content ><![CDATA[#[output application/json
+
+---
+vars.vquery]]]></json-logger:content>
+				</json-logger:logger>
+				<flow-ref doc:name="Flow Reference" doc:id="fd44338b-f70f-4f0a-ae5d-a10065368042" name="impl-databaseinfoSub_Flow"/>
+				<json-logger:logger doc:name="incomeApplicants DB OutputLogger" doc:id="f3c69170-be49-44f0-b93f-143b61522ef2" config-ref="JSON_Logger_Config" message='#["INFO: incomeApplicants DB Output for CorrelationId :: " ++ (vars.vTrackingHeader.correlationId as String default "")]'>
+					<json-logger:content ><![CDATA[#[output application/json
+
+---
+payload]]]></json-logger:content>
+				</json-logger:logger>
+				<ee:transform doc:name="DW: final output of hdfc-ilps-incomeApplicants-pro-api" doc:id="32010814-b5e2-46f3-bf5d-06082b756449" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+import camelize from dw::core::Strings
+output application/json
+var payload01 =payload[0]
+var payload02 = payload -- [payload[0]]
+---
+if((not isEmpty(payload)))
+({"success": true,"timestamp": (now()>>'IST') as String {format:"dd-MM-yyyy hh:mm:ss a"},
+	"correlationId": vars.vTrackingHeader.correlationId, 
+	"appName": vars.vTrackingHeader.appName, 
+	"statusCode": 101, 
+	"statusMsg": "Success",
+	"response": {
+		verifyByuserId: payload01.VERIFYBYUSERID,
+		verifyByUserName: payload01.VERIFYBYUSERNAME,
+		verifiedOn: payload01.VERIFIEDON,
+		verifyStatus: payload01.VERIFYSTATUS,
+		totalAppraisedIncome: payload01.TOTALAPPRAISEDINCOME,
+		incomeApplicantList: payload02 map{
+			"applicantName": $.CUSTNAME,
+			"relationship": $.REL_TO_BORR_DESC,
+			"rowSrNo": $.rowSrNo,
+			"customerNo": $.APPL_CUST_NUMBER,
+			"capacity": $.CAPACITY,
+			"totalNumberOfIncome" : $.NO_OF_INCOMES,
+			"grossIncome" : $.NET_INCOME_AMT,
+			"considerationPercentage": $.CONSI,
+			"appraisedIncome": $.APPRAISED_INCOME_AMT,
+			"isNri": $.NRI_FLAG,
+			"verifyByuserId": payload01.VERIFYBYUSERID,
+			"verifyOn": payload01.VERIFIEDON,
+			"updatedBy": $.UPDATEDBY,
+			"updatedOn": $.UPDATEDON
+			}
+		}
+} )
+else({"success": true,"timestamp": (now()>>'IST') as String {format:"dd-MM-yyyy hh:mm:ss a"}, 
+"correlationId": vars.vTrackingHeader.correlationId,
+ "appName": vars.vTrackingHeader.appName, 
+ "statusCode": 102, 
+ "statusMsg": "Records Not Found"})
+]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			
+</when>
+			<otherwise >
+				<set-payload value="#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;	&quot;timestamp&quot;: (now()&gt;&gt;'IST') as String {format: &quot;dd-MM-yyyy hh:mm:ss a&quot;},&#10;	&quot;correlationId&quot;: attributes.headers.correlationId,&#10;	&quot;appName&quot;: attributes.headers.appName,&#10;	&quot;statusCode&quot;: &quot;103&quot;,&#10;	&quot;statusMsg&quot;: &quot;Invalid Search Criteria&quot;&#10;}]" doc:name="Sp:defaultMessage" doc:id="b50d7df6-afee-4e85-a167-1a8bcc82ad5d" />
+			</otherwise>
+		</choice>
+		<logger level="INFO" doc:name="ilps_impl_Flow_End_Logger" doc:id="f72ec578-dc2e-45ea-8058-6295ebc0aeb5" message='"info: Implementation of incomeApplicants subFlow End:: correrlationId: #[vars.vTrakingHeader.correlationId]'/>
+	</sub-flow>
+</mule>

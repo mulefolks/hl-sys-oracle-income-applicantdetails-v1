@@ -1,0 +1,22 @@
+{
+  "timestamp": "2022-09-30T11:54:58.544+05:30",
+  "correlationId": "nvcjdegmHD",
+  "appName": "ilps",
+  "statusCode": 101,
+  "getApplicantIncomeList": 
+  [{
+    "sourceOfIncome": "Salary",
+    "incomeType": "Primary",
+    "repaymentType": "flip/surf",
+    "fromPeriod": "1/1/2006",
+    "toPeriod": "31/10/2007",
+    "grossIncome": "42045",
+    "norms": "100",
+    "considerationPercentage": "50",
+    "appraisedIncome": "42045",
+    "netIncome": "42045",
+    "rowSrNo": "23397786828",
+    "createdSource": ""
+  }
+]
+}

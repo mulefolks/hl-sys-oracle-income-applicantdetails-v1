@@ -1,0 +1,69 @@
+#%RAML 1.0 Library
+types:
+  output:
+    type: object
+    properties:
+      timestamp:
+        type: string
+        required: false
+        minLength: 1
+        maxLength: 50
+        example: "fefaaw"
+      correlationId:
+        type: string
+        required: false
+        minLength: 1
+        maxLength: 50
+        example: "feaas"
+      appName:
+        type: string
+        required: false
+        minLength: 1
+        maxLength: 50
+        example: "adCad"
+      statusCode:
+        type: number
+        required: false
+        minimum: 101
+        maximum: 101
+        example: 101
+      getApplicantIncomeList:
+        type: array
+        items:
+          properties:
+            sourceOfIncome:
+              type: string
+              required: false
+            incomeType:
+              type: string
+              required: false
+            repaymentType:
+              type: string
+              required: false
+            fromPeriod:
+              type: string
+              required: false
+            toPeriod:
+              type: string
+              required: false
+            grossIncome:
+              type: string
+              required: false
+            norms:
+              type: string
+              required: false
+            considerationPercentage:
+              type: string
+              required: false
+            appraisedIncome:
+              type: string
+              required: false
+            netIncome:
+              type: string
+              required: false
+            rowSrNo:
+              type: string
+              required: false
+            createdSource:
+              type: string
+              required: false

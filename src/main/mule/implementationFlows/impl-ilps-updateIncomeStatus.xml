@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:json-logger="http://www.mulesoft.org/schema/mule/json-logger" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/mule/json-logger/current/mule-json-logger.xsd">
+	<sub-flow name="impl-ilps-incomeStatusUpdationSub_Flow" doc:id="6961ad5b-b510-4bae-b5b5-5439c88f9be6" >
+		<logger level="INFO" doc:name="incomeStatusUpdation hdfc-ilps-master-sys-api flow started" doc:id="c4902464-f319-4bba-bc8a-68afa48a6256" message="Post hdfc-ilps-incomeStatusUpdationsys-api flow started::CorrelationId::#[vars.vTrackingHeader.correlationId]"/>
+		<json-logger:logger doc:name="incomeStatusUpdationSubFlowStartlogger" doc:id="5c0dd580-b03b-4c46-94ec-bcb04747b7e3" config-ref="JSON_Logger_Config" message='#["INFO: incomeStatusUpdation SubFlowStartLogger for CorrelationId :: " ++ (vars.vTrackingHeader.correlationId as String default "")]'>
+			<json-logger:content ><![CDATA[#[output application/json
+
+---
+payload]]]></json-logger:content>
+		</json-logger:logger>
+		<choice doc:name="Choice" doc:id="adcbf6a7-73de-4922-8178-4086c1ac0f4f" >
+			<when expression="#[%dw 2.0&#10;output application/json&#10;---&#10;      (! isEmpty(payload.fileNo))   and&#10;      (! isEmpty(payload.user)) and&#10;	  (! isEmpty(payload.totIncomeAmt)) and&#10;	  (! isEmpty(payload.incomeVer))]">
+				<db:stored-procedure doc:name="Stored procedure for incomeStatusUpdation" doc:id="e2032cea-8397-463a-935b-4eaad0e0a570" config-ref="Database_Config_ilpsDB">
+					<db:sql ><![CDATA[${query.incomeStatusUpdation}]]></db:sql>
+					<db:input-parameters ><![CDATA[#[{
+	"i_file_no": payload.fileNo,
+	"i_user": payload.user,
+	"i_tot_income_amt": payload.totIncomeAmt,
+	"i_income_ver": payload.incomeVer
+}]]]></db:input-parameters>
+					<db:output-parameters >
+						<db:output-parameter key="o_return_cd" type="INTEGER" />
+						<db:output-parameter key="o_return_msg" type="VARCHAR" />
+					</db:output-parameters>
+				</db:stored-procedure>
+				<json-logger:logger doc:name="incomeStatusUpdation Database Output Logger" doc:id="bac950c2-d6d3-4131-b489-122da91b941c" config-ref="JSON_Logger_Config" message='#["INFO: incomeStatusUpdation Database output for CorrelationId :: " ++ (vars.vTrackingHeader.correlationId as String default "")]'>
+					<json-logger:content ><![CDATA[#[output application/json
+---
+payload]]]></json-logger:content>
+				</json-logger:logger>
+				<ee:transform doc:name="DW: final output of hdfc-ilps-incomeStatusUpdation-sys-api" doc:id="64ad471a-dadc-4527-af72-1d45868c71fd" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+if((payload.o_return_msg == "SUCCESS"))
+({"success": true,"timestamp": (now()>>'IST') as String {format: "dd-MM-yyyy hh:mm:ss a"}, 
+"correlationId": vars.vTrackingHeader.correlationId, 
+"appName": vars.vTrackingHeader.appName, 
+"statusCode": 101,
+"statusMsg": "Record Updated successfully",
+"oReturnCd": payload.o_return_cd,
+"oReturnMsg": payload.o_return_msg
+} )
+else({"success": true,"timestamp":(now()>>'IST') as String {format: "dd-MM-yyyy hh:mm:ss a"}, 
+"correlationId": vars.vTrackingHeader.correlationId, 
+"appName": vars.vTrackingHeader.appName, 
+"statusCode":102, 
+"statusMsg": "Records Not updated"})
+]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</when>
+			<otherwise >
+				<ee:transform doc:name="Dw: DefaultTransform Message" doc:id="aca5d13a-d386-4327-84e7-6b3b3d098ffb" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"success": false,
+	"timestamp": (now()>>'IST') as String {format: "dd-MM-yyyy hh:mm:ss a"},
+	"correlationId": attributes.headers.correlationId,
+	"appName": attributes.headers.appName,
+	"statusCode": "103",
+	"statusMsg": "Please Enter Valid Input"
+}
+]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</otherwise>
+		</choice>
+		<logger level="INFO" doc:name="incomeStatusUpdation hdfc-ilps-master-sys-api flow Ended" doc:id="1bce02cd-ac57-4c1c-ab88-3c1a656ed18f" message=" hdfc-incomeStatusUpdation -sys-api flow ended::CorrelationId::#[vars.vTrackingHeader.correlationId]"/>
+	</sub-flow>
+</mule>

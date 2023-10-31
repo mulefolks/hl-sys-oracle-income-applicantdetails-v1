@@ -1,0 +1,38 @@
+#%RAML 1.0 Library
+types:
+  error:
+    type: object
+    properties:
+      success:
+        description: Success Flag
+        type: boolean
+        required: true
+      timestamp:
+        description: Time Stamp
+        type: string
+        required: false
+      appName:
+        description: application Name
+        type: string
+        required: false
+      statusCode:
+        description: status Code
+        type: number
+        required: false
+      correlationId:
+        type: string
+        required: false
+      
+      errors:
+        type: array
+        description: Errors
+        items:
+          properties:
+            error_code:
+              type: string
+              description: Unique error code
+              required: false
+            error_message:
+              type: string
+              description: Indicates a message associated with its error code.
+              required: false

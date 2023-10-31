@@ -1,0 +1,103 @@
+#%RAML 1.0 Library
+types:
+  output:
+    type: object
+    properties:
+      success:
+        type: string
+        required: false
+        minLength: 4
+        maxLength: 5
+        example: "true"
+      timestamp:
+        type: string
+        required: false
+        minLength: 1
+        maxLength: 50
+        example: "fefaaw"
+      correlationId:
+        type: string
+        required: false
+        minLength: 1
+        maxLength: 50
+        example: "feaas"
+      appName:
+        type: string
+        required: false
+        minLength: 1
+        maxLength: 50
+        example: "adCad"
+      statusCode:
+        type: number
+        required: false
+        minimum: 101
+        maximum: 101
+        example: 101
+      statusMessage:
+        type: string
+        required: false
+        minLength: 1
+        maxLength: 10
+        example: "success"
+      Response:
+        type: array
+        items:
+          properties:
+            verifyByuserId:
+              type: string
+              required: false
+            verifyByUserName:
+              type: string
+              required: false
+            verifiedOn:
+              type: string
+              required: false
+            verifyStatus:
+              type: string
+              required: false
+            totalAppraisedIncome:
+              type: string
+              required: false
+            incomeApplicantList:
+              type: array
+              items:
+                properties:  
+                  applicantName:
+                    type: string
+                    required: false
+                  relationship:
+                    type: string
+                    required: false
+                  customerNo:
+                    type: string
+                    required: false
+                  capacity:
+                    type: string
+                    required: false
+                  totalNumberOfIncome:
+                    type: string
+                    required: false
+                  grossIncome:
+                    type: string
+                    required: false
+                  considerationPercentage:
+                    type: string
+                    required: false
+                  appraisedIncome:
+                    type: string
+                    required: false
+                  isNri:
+                    type: string
+                    required: false
+                  verifyByuserId:
+                    type: string
+                    required: false
+                  verifiedOn:
+                    type: string
+                    required: false
+                  updatedBy:
+                    type: string
+                    required: false
+                  updatedOn:
+                    type: string
+                    required: false

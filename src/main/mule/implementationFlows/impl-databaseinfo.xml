@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:json-logger="http://www.mulesoft.org/schema/mule/json-logger" xmlns:tls="http://www.mulesoft.org/schema/mule/tls"
+	xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd
+http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/mule/json-logger/current/mule-json-logger.xsd">
+	<sub-flow name="impl-databaseinfoSub_Flow" doc:id="7284f579-54bc-49ea-bf46-809db789e50c" >
+		<logger level="INFO" doc:name="Logger" doc:id="73645497-551d-4cac-a913-9f5c538610ef" />
+		<json-logger:logger doc:name="databaseInfoStartLogger" doc:id="c4841556-b8e7-442c-be35-c8975f3c9b3f" config-ref="JSON_Logger_Config" message='#["INFO: Select DBinput for CorrelationId :: " ++ (vars.vTrackingHeader.correlationId as String default "")]'>
+			<json-logger:content ><![CDATA[#[output application/json
+
+---
+vars.vquery]]]></json-logger:content>
+		</json-logger:logger>
+		<ee:transform doc:name="variables" doc:id="7f9dfa58-5b6b-4df0-a413-7225717e93ca">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+vars.vquery]]></ee:set-payload>
+			</ee:message>
+			<ee:variables>
+				<ee:set-variable variableName="responseArr"><![CDATA[%dw 2.0
+output application/java
+---
+[]]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<foreach doc:name="For Each" doc:id="047c9e10-1ebd-4f3d-ac47-1e63f25b6e56" collection='#[payload.statement splitBy(";")]'>
+			<try doc:name="Try" doc:id="e22cb8ff-10b4-4045-a3c8-8d94b2cdcda9" transactionalAction="ALWAYS_BEGIN">
+				<db:select doc:name="DB:Select" doc:id="844b5419-ba28-468d-a74e-0554661d6269" config-ref="Database_Config_ilpsDB" transactionalAction="ALWAYS_JOIN">
+										<db:sql><![CDATA[#[trim(payload)]]]></db:sql>
+									</db:select>
+						<json-logger:logger doc:name="SelectDB ResponseLogger" doc:id="9fec9992-1d1d-41e0-a87a-45434bc6c32f" config-ref="JSON_Logger_Config" message='#["INFO: Select DB  Output for CorrelationId :: " ++ (vars.vTrackingHeader.correlationId as String default "")]'>
+						<json-logger:content><![CDATA[#[output application/json
+
+---
+payload]]]></json-logger:content>
+					</json-logger:logger>
+			<set-variable value="#[%dw 2.0&#10;&#10;output application/java&#10;&#10;---&#10;&#10;vars.responseArr default[] ++ payload]" doc:name="responseArr" doc:id="e17e2ada-92e1-407e-bc16-e7bfd5e51446" variableName="responseArr" />
+			<error-handler>
+							<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="0cc722de-0f8c-45d2-9ddb-edb512226fcb" type="ANY">
+								<logger level="INFO" doc:name="Logger" doc:id="fe60748a-edc7-45a5-a915-36fc590bec1f" message="#[error.message]" />
+							</on-error-propagate>
+						</error-handler>
+					</try>
+		
+
+</foreach>
+		<set-payload value="#[%dw 2.0&#10;output application/json&#10;---&#10;vars.responseArr]" doc:name="responsePayload" doc:id="ea11c923-3f65-47a0-bdbe-1ad21ffeddd6" />
+		<json-logger:logger doc:name="outputResponseLogger" doc:id="7a48b758-069c-44db-8d71-97cd0bea9f24" config-ref="JSON_Logger_Config" message='#["INFO: database  Output for CorrelationId :: " ++ (vars.vTrackingHeader.correlationId as String default "")]'>
+				<json-logger:content><![CDATA[#[output application/json
+
+---
+payload]]]></json-logger:content>
+			</json-logger:logger>
+		<logger level="INFO" doc:name="Logger" doc:id="879ff797-3acb-4b83-b239-5476be6f385b" />
+	</sub-flow>
+
+</mule>

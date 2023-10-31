@@ -1,0 +1,62 @@
+#%RAML 1.0 ResourceType
+post:
+  body:
+    application/json:
+      type: <<request-schema>>
+      example: <<request-example>>
+  responses:
+    200:
+      body:
+        application/json:
+          type: <<response-schema>>
+          example: <<response-example>>          
+    400:
+      body:
+        application/json:
+          type: <<error-schema>>
+          example: !include ../Examples/responseExample/ErrorResponse/error_400_example.json
+    401:
+      body:
+        application/json:
+          type: <<error-schema>>
+          example: !include ../Examples/responseExample/ErrorResponse/error_401_example.json
+    403:
+      body:
+        application/json:
+          type: <<error-schema>>
+          example: !include ../Examples/responseExample/ErrorResponse/error_403_example.json
+    404:
+      body:
+        application/json:
+          type: <<error-schema>>
+          example: !include ../Examples/responseExample/ErrorResponse/error_404_example.json
+    408:
+      body:
+        application/json: 
+          type: <<error-schema>>
+          example: !include ../Examples/responseExample/ErrorResponse/error_408_example.json
+    422:
+      body:
+        application/json:
+          type: <<error-schema>>
+          example: !include ../Examples/responseExample/ErrorResponse/error_422_example.json
+    500:
+      body:
+        application/json:
+          type: <<error-schema>>
+          example: !include ../Examples/responseExample/ErrorResponse/error_500_example.json
+    501:
+      body:
+        application/json:
+          type: <<error-schema>>
+          example: !include ../Examples/responseExample/ErrorResponse/error_501_example.json
+    503:
+      body:
+        application/json:
+          type: <<error-schema>>
+          example: !include ../Examples/responseExample/ErrorResponse/error_503_example.json
+    504:
+      body:
+        application/json:
+          type: <<error-schema>>
+          example: !include ../Examples/responseExample/ErrorResponse/error_504_example.json

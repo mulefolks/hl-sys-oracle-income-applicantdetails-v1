@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:json-logger="http://www.mulesoft.org/schema/mule/json-logger" xmlns:api-gateway="http://www.mulesoft.org/schema/mule/api-gateway"
+	xmlns:tls="http://www.mulesoft.org/schema/mule/tls"
+	xmlns:secure-properties="http://www.mulesoft.org/schema/mule/secure-properties" xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/secure-properties http://www.mulesoft.org/schema/mule/secure-properties/current/mule-secure-properties.xsd
+http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd
+http://www.mulesoft.org/schema/mule/api-gateway http://www.mulesoft.org/schema/mule/api-gateway/current/mule-api-gateway.xsd
+http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/mule/json-logger/current/mule-json-logger.xsd">
+   	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="0c5c74e5-c3e3-478f-b836-794b155e64bb" basePath="${https.basePath}" >
+		<http:listener-connection host="${https.host}" port="${https.port}" readTimeout="${https.timeout}" connectionIdleTimeout="${https.idletimeout}">
+		</http:listener-connection>
+	</http:listener-config>
+	<apikit:config name="hl-sys-oracle-income-applicantDetails-v1-config" api="hl-sys-oracle-income-applicantDetails-v1.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+	<configuration doc:name="Configuration" doc:id="92fa03ff-51a1-49b8-9b37-d4813e62f979" defaultErrorHandler-ref="Error_Handler" />
+	<configuration-properties doc:name="Configuration properties" doc:id="d5dc856c-b16c-4c65-9024-373d45635cd3" file="properites\\${mule.env}-properties.yaml" />
+	<json-logger:config name="JSON_Logger_Config" doc:name="JSON Logger Config" doc:id="cea4440a-49b9-4123-ba6c-2b4f1e37ae04" environment="${mule.env}" />
+	<configuration-properties doc:name="Configuration properties" doc:id="304dc93b-ec28-405e-9afc-0d92fe55c3d5" file="properites\common-properties.yaml" />
+	<secure-properties:config name="Secure_Properties_Config" doc:name="Secure Properties Config" doc:id="a5b11ee8-2289-4a73-9479-18893ab54e7f" file="properites\\${mule.env}-properties.yaml" key="${mule.key}" />
+	<db:config name="Database_Config_ilpsDB" doc:name="Database Config" doc:id="157cc106-83c1-4534-91ec-669e9549d26c" >
+		<db:oracle-connection host="${secure::ILPSDBN.host}" port="${ILPSDBN.port}" user="${secure::ILPSDBN.user}" password="${secure::ILPSDBN.password}" serviceName="${secure::ILPSDBN.serviceName}" cacheQueryTemplateSize="${ILPSDBN.pool.templateSize}">
+			<reconnection >
+				<reconnect frequency="${ILPSDBN.reconnection.frequency}" count="${ILPSDBN.reconnection.attempts}" blocking="false"/>
+			</reconnection>
+			<db:pooling-profile maxPoolSize="${ILPSDBN.pool.maxPoolSize}" minPoolSize="${ILPSDBN.pool.minPoolSize}" acquireIncrement="${ILPSDBN.pool.acqIncrement}" preparedStatementCacheSize="${ILPSDBN.pool.preStatCacheSize}" maxWait="${ILPSDBN.pool.maxWait}" maxIdleTime="${ILPSDBN.pool.maxIdletime}" maxStatements="${ILPSDBN.pool.maxStatement}" />
+		</db:oracle-connection>
+	</db:config>
+	<api-gateway:autodiscovery apiId="${api.id}" ignoreBasePath="true" doc:name="API Autodiscovery" doc:id="25078e8c-7a43-4695-a735-a6ac9138c673" flowRef="hl-sys-oracle-income-applicantDetails-v1-main" />
+	</mule>

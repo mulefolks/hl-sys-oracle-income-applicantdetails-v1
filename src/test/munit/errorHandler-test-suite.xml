@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="errorHandler-test-suite.xml" />
+	<munit:test name="errorHandler-test-suite-error_handlerFlowTest" doc:id="3a746c37-385d-42a8-890a-9ad9e12ec890" description="Test" expectedErrorType="ODB:BAD_REQUEST">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="d24ba74e-3f0b-4231-af9b-ac1f90c587ea" processor="raise-error">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Raise error" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="f040510e-ce9f-4373-99bb-1949d6c1f048" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="ODB:BAD_REQUEST" attributeName="type" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="ODB:BAD_REQUEST" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to error_handlerFlow" doc:id="461d1c2f-ea0a-4605-a449-bd1a6727c78a" name="error_handlerFlow"/>
+		</munit:execution>
+	</munit:test>
+
+
+</mule>

@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:json-logger="http://www.mulesoft.org/schema/mule/json-logger" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/mule/json-logger/current/mule-json-logger.xsd">
+	<sub-flow name="imple-incomeApplicantUpdation_NewSub_Flow" doc:id="a1a5bb8c-f2ac-49a9-9ac0-ad64e3e8ad80" >
+		<logger level="INFO" doc:name="incomeApplicantUpdationsys-hdfc-ilps-master-sys-api flow started" doc:id="484e3fcb-3ca7-402b-a048-cc881240d4f7" message="Post hdfc-ilps-incomeApplicantUpdation-sys-api flow started::CorrelationId::#[vars.vTrackingHeader.correlationId]"/>
+		<json-logger:logger doc:name="incomeApplicantUpdationsubFlowStartLogger" doc:id="f201789f-477a-46fa-9ed7-2e2249d309cf" config-ref="JSON_Logger_Config" message='#["INFO: incomeApplicantUpdation subFlowStartLogger for CorrelationId :: " ++ (vars.vTrackingHeader.correlationId as String default "")]'>
+			<json-logger:content ><![CDATA[#[output application/json
+
+---
+payload]]]></json-logger:content>
+		</json-logger:logger>
+		<choice doc:name="Choice" doc:id="7889ca74-4746-4419-8d7d-c62f5aa96033" >
+			<when expression="#[%dw 2.0&#10;output application/json&#10;---&#10;((! isEmpty(payload.customerNo)) and (! isEmpty(payload.fileNo)) and (! isEmpty(payload.considerationPercentage))and (! isEmpty(payload.appraisedIncome))and (! isEmpty(payload.updatedBy)))]">
+				<try doc:name="Try" doc:id="30e6a89f-8ee2-4c3c-bb87-a839c536fa0f" transactionalAction="ALWAYS_BEGIN">
+					<db:update doc:name="incomeApplicantUpdation_query" doc:id="c2726ca4-d557-4537-921a-933e990cabae" config-ref="Database_Config_ilpsDB" target="outputUpdateIncome">
+					<db:sql><![CDATA[${query.incomeApplicantUpdation}]]></db:sql>
+					<db:input-parameters><![CDATA[#[{
+customerNo:payload.customerNo default "",
+fileNo:payload.fileNo default "",
+considerationPercentage: payload.considerationPercentage default "",
+appraisedIncome: payload.appraisedIncome default "",
+rowSrNo:payload.rowSrNo default "",
+updatedBy:payload.updatedBy default "",
+updatedOn:payload.updatedOn default ""
+}]]]></db:input-parameters>
+				</db:update>
+					<db:select doc:name="countCheck" doc:id="fb9d4dc5-ebf7-402d-8f8b-c5e82ff630db" config-ref="Database_Config_ilpsDB">
+				<db:sql ><![CDATA[select Count(*)
+from Ilps.Cas_Obl_Inc_Summary t
+where t.File_no = :fileNo]]></db:sql>
+				<db:input-parameters ><![CDATA[#[{
+	"fileNo": vars.inputRequest.fileNo as Number default ""
+}]]]></db:input-parameters>
+			</db:select>
+			<choice doc:name="Choice" doc:id="0d4e3041-f56d-4d33-9f38-dedf6a2f7411" >
+				<when expression='#[%dw 2.0&#10;output application/json&#10;---&#10;(payload."COUNT(*)"[0]) == 0]'>
+					<db:select doc:name="totalIncomeAmount" doc:id="e1bf1176-82b9-4772-ae9f-805432111bed" config-ref="Database_Config_ilpsDB" target="totalIncomeAmount">
+						<db:sql ><![CDATA[Select Sum(d.Cust_Appraised_Inc)
+From Cas.Income_Appraised_Details d
+Where d.File_No = :fileNo]]></db:sql>
+						<db:input-parameters ><![CDATA[#[{
+	"fileNo": vars.inputRequest.fileNo as Number default ""
+}]]]></db:input-parameters>
+					</db:select>
+					<db:insert doc:name="insertIncomeSummary" doc:id="86c4329f-8a93-4f35-9e54-d0e632e920bf" config-ref="Database_Config_ilpsDB">
+						<db:sql ><![CDATA[Insert Into Ilps.Cas_Obl_Inc_Summary
+(File_No,
+Tot_Obl_Amt,
+Obl_Verify_Flag,
+Obl_Upd_By,
+Obl_Upd_Date,
+Tot_Income_Amt,
+Inc_Verify_Flag,
+Inc_Upd_By,
+Inc_Upd_Date,
+Bur_Verify_Flag,
+Bur_Upd_By,
+Bur_Upd_Date,
+Obser_Verify_Flag,
+Obser_Upd_By,
+Obser_Upd_Date,
+Created_By,
+Created_Date,
+Remarks,
+Rem_Upd_By,
+Rem_Upd_Date,
+Creation_Date,
+Upd_Date,
+Row_Srno)
+Values
+(:fileNo,
+Null,
+Null,
+Null,
+Null,
+:totalIncomeAmount,
+'N',
+:userId,
+Sysdate,
+Null,
+Null,
+Null,
+Null,
+Null,
+Null,
+:userId,
+Sysdate,
+Null,
+Null,
+Null,
+Sysdate,
+Null,
+Null)]]></db:sql>
+						<db:input-parameters ><![CDATA[#[{
+	"fileNo": vars.inputRequest.fileNo as Number default "",
+	"totalIncomeAmount": vars.totalIncomeAmount."SUM(D.CUST_APPRAISED_INC)"[0] default Null,
+	"userId": vars.inputRequest.updatedBy default Null
+}]]]></db:input-parameters>
+					</db:insert>
+				</when>
+				<otherwise >
+					<db:update doc:name="updateIncomeSummary" doc:id="f5edb834-9c3e-4555-b0b3-a43d2edef01c" config-ref="Database_Config_ilpsDB">
+						<db:sql ><![CDATA[Update Ilps.Cas_Obl_Inc_Summary t
+Set t.Tot_Income_Amt =
+(Select Sum(d.Cust_Appraised_Inc)
+From Cas.Income_Appraised_Details d
+Where d.File_No = t.File_No)
+Where t.File_no = :fileNo]]></db:sql>
+						<db:input-parameters ><![CDATA[#[{
+	"fileNo": vars.inputRequest.fileNo as Number default ""
+}]]]></db:input-parameters>
+					</db:update>
+				</otherwise>
+			</choice>
+			<error-handler >
+						<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="612425c1-0ac9-4b17-8566-84647f6281a1" >
+							<json-logger:logger doc:name="updateIncomeDbErrorLogger" doc:id="e8eda2ff-0425-49d9-b88f-924776ff9974" config-ref="JSON_Logger_Config" message='#["INFO: onerrorPropagate updateIncome Flow Start for the CorrelationId :: " ++ (vars.vTrackingHeader.correaltionId as String default "")]'>
+								<json-logger:content ><![CDATA[#[output application/json
+---
+(error.description as String default "")]]]></json-logger:content>
+							</json-logger:logger>
+						</on-error-propagate>
+					</error-handler>
+				</try>
+				<json-logger:logger doc:name="incomeApplicantUpdation Database Output Logger" doc:id="bc746c64-e10e-4ada-b623-eacdbb77baac" config-ref="JSON_Logger_Config" message='#["INFO: incomeApplicantUpdation Database output for CorrelationId :: " ++ (vars.vTrackingHeader.correlationId as String default "")]'>
+					<json-logger:content ><![CDATA[#[output application/json
+---
+payload]]]></json-logger:content>
+				</json-logger:logger>
+				<ee:transform doc:name="DW: final output of hdfc-ilps-incomeApplicantUpdations-sys-api" doc:id="8cfe1448-4366-43f6-a485-50fc6b18eab2" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+if((not isEmpty(payload.affectedRows)))
+({"success": true,"timestamp": (now()>>'IST') as String {format:"dd-MM-yyyy hh:mm:ss a"}, 
+"correlationId": vars.vTrackingHeader.correlationId, 
+"appName": vars.vTrackingHeader.appName, 
+"statusCode": 101,
+"statusMsg": "Record Updated successfully",
+"recordsUpdated": payload.affectedRows 
+})
+else({"success": true,"timestamp": (now()>>'IST') as String {format:"dd-MM-yyyy hh:mm:ss a"},
+ "correlationId": vars.vTrackingHeader.correlationId,
+ "appName": vars.vTrackingHeader.appName,
+ "statusCode":102,
+ "statusMsg": "No records Updated "})]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</when>
+			<otherwise >
+				<ee:transform doc:name="Dw:Default Transform Message" doc:id="a6c5ed5f-3c08-4466-9299-f7242b709ddb" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"success": false,
+	"timestamp": (now()>>'IST') as String {format: "dd-MM-yyyy hh:mm:ss a"},
+	"correlationId": attributes.headers.correlationId,
+	"appName": attributes.headers.appName,
+	"statusCode": "103",
+	"statusMsg": "Invalid Search Criteria"
+}
+]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</otherwise>
+		</choice>
+		<logger level="INFO" doc:name="incomeApplicantUpdation hdfc-ilps-master-sys-api flow Ended" doc:id="ade3b141-a7ad-489e-83b1-004b1ce5f5cc" message=" hdfc-incomeApplicantUpdation-sys-api flow ended::CorrelationId::#[vars.vTrackingHeader.correlationId]"/>
+	</sub-flow>
+</mule>

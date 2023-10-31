@@ -1,0 +1,18 @@
+name: Continuous deployment
+
+on:
+  push:
+    branches:  
+      - development
+      - uat
+      - release
+      - main  
+
+jobs:
+  CD:
+    uses: hdfcltd/ME1-central-cicd/.github/workflows/cd.yml@main
+    secrets:
+      MULE_KEY_DEV: ${{ secrets.MULE_KEY_DEV }}
+      MULE_KEY_UAT: ${{ secrets.MULE_KEY_UAT }}
+      MULE_KEY_PRE_PROD: ${{ secrets.MULE_KEY_PRE_PROD }}
+      MULE_KEY_PROD: ${{ secrets.MULE_KEY_PROD }}
