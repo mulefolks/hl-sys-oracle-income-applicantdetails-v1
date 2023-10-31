@@ -1,0 +1,45 @@
+
+api:
+  id: "18895872"
+  appName: "hl-sys-oracle-income-applicantDetails-v1"
+json.logger.application:
+  name: "hl-sys-oracle-income-applicantDetails-v1"
+  version: "1.0.0"
+
+#Listener Config
+https:
+  host: "0.0.0.0"
+  port: "8089"
+  basePath: "/oracappl/v1"
+  path: "/api/*"
+  frequency: "2000"
+  reconnect.attempts: "2"
+  timeout: "3000"
+  idletimeout: "40000"
+  tls:
+    path: "Wildcard_AWS_LZt.jks"
+    certType: "JKS"
+    pass: "![wsroVXz51o4r9mCAXWGZzg==]"
+  
+
+ILPSDBN:
+  host: "![WcFE02Dzdzy8z2Nah8clcg==]"
+  port: "1555"
+  password: "![l43YILYk1kjauZk6ar1a2A==]"
+  user: "![sEuyI548feV2XgkTXZ9ORg==]"
+  serviceName: "![7S4SeY9VCuec7a5fUOfWjg==]"
+  reconnection:
+    frequency: "3000"
+    attempts: "2"
+    timeout: "3000"
+  pool:
+    maxPoolSize: "5"
+    minPoolSize: "2"
+    acqIncrement: "5"
+    preStatCacheSize: "0"
+    maxWait: "7"
+    maxIdletime: "0"
+    maxStatement: "0"
+    templateSize: "0"
+
+  

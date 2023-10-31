@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:json-logger="http://www.mulesoft.org/schema/mule/json-logger" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd  http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/mule/json-logger/current/mule-json-logger.xsd">
+    <flow name="hl-sys-oracle-income-applicantDetails-v1-main">
+        <http:listener config-ref="HTTP_Listener_config" path="/api/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:error-response>
+        </http:listener>
+        <set-variable value="#[payload]" doc:name="SV:inputRequest" doc:id="19535ed2-e40b-4df8-a9c2-f5493d3fbd9f" variableName="inputRequest" />
+        <set-variable value="#[output application/json&#xA;---&#xA;{&#xA; &quot;correlationId&quot;: attributes.headers.correlationId,&#xA; &quot;appName&quot;: attributes.headers.appName&#xA; &#xA;}]" doc:name="SV: TrackingHeaders" doc:id="4af1bddf-5aae-4ce0-bded-2cc83ac7075b" variableName="vTrackingHeader" />
+        <apikit:router config-ref="hl-sys-oracle-income-applicantDetails-v1-config" />
+        <error-handler ref="Error_Handler" />
+    </flow>
+    <flow name="get:\applicantIncomeList:hl-sys-oracle-income-applicantDetails-v1-config">
+        <json-logger:logger doc:name="applicantIncomeListMainFlowStartLogger" doc:id="6e30617e-d377-4f79-91af-9a21fd68e8b6" config-ref="JSON_Logger_Config" message="#[&quot;Info: applicantIncomeList Main Flow Start for CorrelationId :: &quot; ++ (vars.vTrackingHeader.correlationId as String default &quot;&quot;)]">
+            <json-logger:content><![CDATA[#[output application/json
+---
+{
+	"input Params": {
+		"headersParams": attributes.headers default "null",
+		"queryParams": attributes.queryParams default "null",
+		"BodyParams": payload default "null"
+	}
+}]]]></json-logger:content>
+        </json-logger:logger>
+        <flow-ref doc:name="Flow Reference" doc:id="4c5e11b1-e150-45a5-a6be-a5941743d75d" name="impl-ilps-applicantIncomeListSub_Flow" />
+        <json-logger:logger doc:name="applicantIncomeListMainFlowEndLogger" doc:id="141b9bdb-6df3-4153-87e6-b2b2a5227853" config-ref="JSON_Logger_Config" message="#[&quot;Info: applicantIncomeList Main Flow End for CorrelationId :: &quot; ++ (vars.vTrackingHeader.correlationId as String default &quot;&quot;)]" />
+    </flow>
+    <flow name="get:\incomeApplicants:hl-sys-oracle-income-applicantDetails-v1-config">
+        <json-logger:logger doc:name="applicantIncomeListMainFlowStartLogger" doc:id="b964f365-e4b5-442b-b5f9-0d0ecba82f60" config-ref="JSON_Logger_Config" message="#[&quot;Info: applicantIncomeList Main Flow Start for CorrelationId :: &quot; ++ (vars.vTrackingHeader.correlationId as String default &quot;&quot;)]">
+            <json-logger:content><![CDATA[#[output application/json
+---
+{
+	"input Params": {
+		"headersParams": attributes.headers default "null",
+		"queryParams": attributes.queryParams default "null",
+		"BodyParams": payload default "null"
+	}
+}]]]></json-logger:content>
+        </json-logger:logger>
+        <flow-ref doc:name="Flow Reference" doc:id="8482cb63-f64a-47ff-b389-a82a782681e9" name="impl-ilps-incomeApplicantsSub_Flow" />
+        <json-logger:logger doc:name="applicantIncomeListMainFlowEndLogger" doc:id="298f1893-82d8-4e5c-bb90-31322a674375" config-ref="JSON_Logger_Config" message="#[&quot;Info: applicantIncomeList Main Flow End for CorrelationId :: &quot; ++ (vars.vTrackingHeader.correlationId as String default &quot;&quot;)]" />
+    </flow>
+    <flow name="get:\sourceOfIncome:hl-sys-oracle-income-applicantDetails-v1-config">
+        <json-logger:logger doc:name="sourceOfIncomeMainFlowStartLogger" doc:id="f0ea9c88-ffe1-47b4-8854-68d67f2369a1" config-ref="JSON_Logger_Config" message="#[&quot;Info: sourceOfIncome Main Flow Start for CorrelationId :: &quot; ++ (vars.vTrackingHeader.correlationId as String default &quot;&quot;)]">
+            <json-logger:content><![CDATA[#[output application/json
+---
+{
+	"input Params": {
+		"headersParams": attributes.headers default "null",
+		"queryParams": attributes.queryParams default "null",
+		"BodyParams": payload default "null"
+	}
+}]]]></json-logger:content>
+        </json-logger:logger>
+        <flow-ref doc:name="Flow Reference" doc:id="2aac8dda-f6a1-404c-b85f-281f79ddf7f4" name="impl-ilps-sourceOfIncomeSub_Flow" />
+        <json-logger:logger doc:name="sourceOfIncomeMainFlowEndLogger" doc:id="a3f9cc8b-454c-4dbd-bfc2-c090c7fd023f" config-ref="JSON_Logger_Config" message="#[&quot;Info: sourceOfIncome Main Flow End for CorrelationId :: &quot; ++ (vars.vTrackingHeader.correlationId as String default &quot;&quot;)]" />
+    </flow>
+    <flow name="get:\healthCheck:hl-sys-oracle-income-applicantDetails-v1-config">
+        <json-logger:logger doc:name="helathCheckMainFlowStartLogger" doc:id="35cc1938-7bff-4920-82d3-aef87bc1595a" config-ref="JSON_Logger_Config" message="#[&quot;Info: healthCheck Main Flow Start for CorrelationId :: &quot; ++ (vars.vTrackingHeader.correlationId as String default &quot;&quot;)]">
+            <json-logger:content><![CDATA[#[output application/json
+---
+{
+	"input Params": {
+		"headersParams": attributes.headers default "null",
+		"queryParams": attributes.queryParams default "null",
+		"BodyParams": payload default "null"
+	}
+}]]]></json-logger:content>
+        </json-logger:logger>
+        <ee:transform>
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  timestamp: "(now()>>'IST')",
+  Message: "The Api is Active"
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+        <json-logger:logger doc:name="helathCheckMainFlowEndLogger" doc:id="fd349cad-37a4-49b5-9138-965c81c34b05" config-ref="JSON_Logger_Config" message="#[&quot;Info: healthCheck Main Flow End for CorrelationId :: &quot; ++ (vars.vTrackingHeader.correlationId as String default &quot;&quot;)]" />
+    </flow>
+    <flow name="post:\incomeApplicantUpdation:application\json:hl-sys-oracle-income-applicantDetails-v1-config">
+        <json-logger:logger doc:name="incomeApplicantUpdationMainFlowStartLogger" doc:id="d2749118-a3b6-4d96-9fb7-20b41bc6f925" config-ref="JSON_Logger_Config" message="#[&quot;Info: incomeApplicantUpdation Main Flow Start for CorrelationId :: &quot; ++ (vars.vTrackingHeader.correlationId as String default &quot;&quot;)]">
+            <json-logger:content><![CDATA[#[output application/json
+---
+{
+	"input Params": {
+		"headersParams": attributes.headers default "null",
+		"queryParams": attributes.queryParams default "null",
+		"BodyParams": payload default "null"
+	}
+}]]]></json-logger:content>
+        </json-logger:logger>
+        <flow-ref doc:name="Flow Reference" doc:id="c77df4a4-1ca7-4160-845d-7454f5286ead" name="imple-incomeApplicantUpdation_NewSub_Flow" />
+        <json-logger:logger doc:name="incomeApplicantUpdationMainFlowEndLogger" doc:id="f668868a-7517-4b35-99ae-4feb407c97dd" config-ref="JSON_Logger_Config" message="#[&quot;Info: incomeApplicantUpdation Main Flow End for CorrelationId :: &quot; ++ (vars.vTrackingHeader.correlationId as String default &quot;&quot;)]" />
+    </flow>
+    <flow name="post:\incomeStatusUpdation:application\json:hl-sys-oracle-income-applicantDetails-v1-config">
+        <json-logger:logger doc:name="incomeStatusUpdationMainFlowStartLogger" doc:id="92e56981-2732-4874-a5fc-2822c3abc55c" config-ref="JSON_Logger_Config" message="#[&quot;Info: incomeStatusUpdation Main Flow Start for CorrelationId :: &quot; ++ (vars.vTrackingHeader.correlationId as String default &quot;&quot;)]">
+            <json-logger:content><![CDATA[#[output application/json
+---
+{
+	"input Params": {
+		"headersParams": attributes.headers default "null",
+		"queryParams": attributes.queryParams default "null",
+		"BodyParams": payload default "null"
+	}
+}]]]></json-logger:content>
+        </json-logger:logger>
+        <flow-ref doc:name="Flow Reference" doc:id="92d16041-c883-404f-bf9c-c5741dfe3c7d" name="impl-ilps-incomeStatusUpdationSub_Flow" />
+        <json-logger:logger doc:name="incomeStatusUpdationMainFlowEndLogger" doc:id="b0f3e58b-95f9-4914-a742-087abf431343" config-ref="JSON_Logger_Config" message="#[&quot;Info: incomeStatusUpdation Main Flow End for CorrelationId :: &quot; ++ (vars.vTrackingHeader.correlationId as String default &quot;&quot;)]" />
+    </flow>
+    <flow name="get:\additionalSourceDetails:hl-sys-oracle-income-applicantDetails-v1-config">
+        <json-logger:logger doc:name="additionalSourceDetailsMainFLowStartLogger" doc:id="250f6c2b-e66e-41a6-8816-69fe040da8e6" config-ref="JSON_Logger_Config" message="#[&quot; INFO: additionalSourceDetailsMainFLowStartLogger for correlaltionId :: &quot; ++ (vars.vTrackingHeader.correlationId as String default &quot;&quot;)]">
+            <json-logger:content><![CDATA[#[output application/json
+---
+{
+	"input Params": {
+		"headersParams": attributes.headers default "null",
+		"queryParams": attributes.queryParams default "null",
+		"BodyParams": payload default "null"
+	}
+}]]]></json-logger:content>
+        </json-logger:logger>
+        <flow-ref doc:name="FR:impl-ilps-getAdditionalDetailsSub_Flow" doc:id="9bf83ad0-f9e7-424e-bd32-6dea0b7b9d15" name="impl-ilps-getAdditionalDetailsSub_Flow" />
+        <json-logger:logger doc:name="additionalSourceDetailsMainFLowEndLogger" doc:id="456e5463-5130-4d9a-9356-331865eacd26" config-ref="JSON_Logger_Config" message="#[&quot; INFO: additionalSourceDetailsMainFLowEndLogger for correlaltionId :: &quot; ++ (vars.vTrackingHeader.correlationId as String default &quot;&quot;)]">
+            <json-logger:content><![CDATA[#[output application/json
+
+---
+payload]]]></json-logger:content>
+        </json-logger:logger>
+    </flow>
+</mule>

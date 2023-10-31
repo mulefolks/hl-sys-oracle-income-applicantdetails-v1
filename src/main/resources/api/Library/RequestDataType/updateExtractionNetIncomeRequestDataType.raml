@@ -1,0 +1,21 @@
+#%RAML 1.0 Library
+types:
+  input:
+    type: object
+    properties:
+      customerNo:
+        type: string | number
+        required: true
+      fileNo:
+        type: string | number 
+        required: true
+      netIncome:
+        type: string | number | nil
+        required: false
+      updatedBy:
+        type: string
+        required: false
+      updatedOn:
+        type: string
+        required: false
+      

@@ -1,0 +1,20 @@
+#%RAML 1.0 Library
+types:
+  input:
+    type: object
+    properties:
+      fileNo:
+        type: integer
+        required: true
+      user:
+        type: string
+        required: true
+      totIncomeAmt:
+        type: integer
+        required: true
+      incomeVer:
+        type: string
+        required: true
+        enum:
+            - Y
+            - N

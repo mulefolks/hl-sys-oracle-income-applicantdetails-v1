@@ -1,0 +1,94 @@
+#%RAML 1.0 Library
+types:
+  input:
+    type: object
+    properties:
+      modifyFlag:
+        type: string | nil
+        required: true
+      fileNo:
+        type: number | string
+        required: true        
+        example: 45
+      customerNo:
+        type: string
+        required: true       
+        example: "pqrstd"
+      mernavyCalcSrno:
+        type: number | string
+        required: false       
+        example: 12
+      Considered%:
+        type: number | string
+        required: false
+      noOfYrsConsd:
+        type: number | string
+        required: true       
+        example: 5.00
+      grossSalPmFc:
+        type: number | string
+        required: true       
+        example: 2753.00
+      consiPer:
+        type: number | string | nil
+        required: false       
+        example: 50
+      compIncome:
+        type: number | string | nil
+        required: false       
+        example: 2753 
+      currency:
+        type: string
+        required: true       
+        example: "pqrstd"
+      convRate:
+        type: number | string
+        required: true
+      totalDaysSailed:
+        type: number | string
+        required: true       
+        example: 12
+      avgDaysSailed:
+        type: number | string 
+        required: true       
+        example: 185.00 
+      compGrossSalPmF:
+        type: number | string
+        required: true       
+        example: 1415.00 
+      salPmInr:
+        type: number | string
+        required: true       
+        example: 101.767 
+      userId:
+        type: string
+        required: true       
+        example: "pqrstd"      
+      sailingPeriod:
+        type: array
+        required: false
+        items:
+          properties:
+            mernavyCalcPeriodSrno:
+              type: number | string
+              required: false
+            fileNo:
+              type: number | string
+              required: false
+            custNumber:
+              type: string
+              required: false
+            startDate:
+              type: date-only | nil
+              required: false
+            endDate:
+              type: date-only | nil
+              required: false
+            noOfDaysSailed:
+              type: number | string
+              required: false
+            modifyFlag:
+              type: string | nil
+              required: true
+
+

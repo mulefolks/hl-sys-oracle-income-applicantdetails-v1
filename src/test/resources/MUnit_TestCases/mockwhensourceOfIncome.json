@@ -1,0 +1,158 @@
+[
+  {
+    "CD_DESC": "Agricultural / Rural",
+    "CD_VAL": "AGR"
+  },
+  {
+    "CD_DESC": "Allowances ( Non Salary Component )",
+    "CD_VAL": "ALW"
+  },
+  {
+    "CD_DESC": "Bonus / Incentive ( Annual / Semi Annual )",
+    "CD_VAL": "BON"
+  },
+  {
+    "CD_DESC": "Business",
+    "CD_VAL": "BUS"
+  },
+  {
+    "CD_DESC": "Interest on capital",
+    "CD_VAL": "CAP"
+  },
+  {
+    "CD_DESC": "Company Lease",
+    "CD_VAL": "CML"
+  },
+  {
+    "CD_DESC": "Non Salary Commision",
+    "CD_VAL": "COM"
+  },
+  {
+    "CD_DESC": "Conveyance",
+    "CD_VAL": "CON"
+  },
+  {
+    "CD_DESC": "Consultancy",
+    "CD_VAL": "CONSUL"
+  },
+  {
+    "CD_DESC": "Depreciation",
+    "CD_VAL": "DEP"
+  },
+  {
+    "CD_DESC": "Dividend",
+    "CD_VAL": "DIV"
+  },
+  {
+    "CD_DESC": "Future House Rent Allowance",
+    "CD_VAL": "FHR"
+  },
+  {
+    "CD_DESC": "Gross Receipt of Professional",
+    "CD_VAL": "GR"
+  },
+  {
+    "CD_DESC": "Honourairum",
+    "CD_VAL": "HON"
+  },
+  {
+    "CD_DESC": "Hindu Undivided Family",
+    "CD_VAL": "HUF"
+  },
+  {
+    "CD_DESC": "Interest form Investment in Business",
+    "CD_VAL": "INB"
+  },
+  {
+    "CD_DESC": "Bonus / Incentives - quarterly",
+    "CD_VAL": "INC"
+  },
+  {
+    "CD_DESC": "Interest from investments in Deposits etc",
+    "CD_VAL": "INS"
+  },
+  {
+    "CD_DESC": "Interest subsidy from Employer",
+    "CD_VAL": "ISU"
+  },
+  {
+    "CD_DESC": "Lease Rent Assignable to HDFC",
+    "CD_VAL": "LRI"
+  },
+  {
+    "CD_DESC": "Merchant Navy",
+    "CD_VAL": "MERC"
+  },
+  {
+    "CD_DESC": "Mileage",
+    "CD_VAL": "MIL"
+  },
+  {
+    "CD_DESC": "Bonus/Incentive - Monthly",
+    "CD_VAL": "MON"
+  },
+  {
+    "CD_DESC": "Overtime",
+    "CD_VAL": "OT"
+  },
+  {
+    "CD_DESC": "Pension",
+    "CD_VAL": "PEN"
+  },
+  {
+    "CD_DESC": "Profit",
+    "CD_VAL": "PFT"
+  },
+  {
+    "CD_DESC": "Remuneration to Partners",
+    "CD_VAL": "PRM"
+  },
+  {
+    "CD_DESC": "Proposed Rent",
+    "CD_VAL": "PRT"
+  },
+  {
+    "CD_DESC": "Part time Salary",
+    "CD_VAL": "PT"
+  },
+  {
+    "CD_DESC": "Director's Remuneration",
+    "CD_VAL": "REM"
+  },
+  {
+    "CD_DESC": "Rent Income",
+    "CD_VAL": "RNT"
+  },
+  {
+    "CD_DESC": "Rent income - assignable to HDFC",
+    "CD_VAL": "RNT_HDFC"
+  },
+  {
+    "CD_DESC": "Royalty Income",
+    "CD_VAL": "ROY"
+  },
+  {
+    "CD_DESC": "Salary",
+    "CD_VAL": "SAL"
+  },
+  {
+    "CD_DESC": "Self lease",
+    "CD_VAL": "SEL"
+  },
+  {
+    "CD_DESC": "Self Employed Income",
+    "CD_VAL": "SE_INC"
+  },
+  {
+    "CD_DESC": "Share in Net Profit",
+    "CD_VAL": "SNP"
+  },
+  {
+    "CD_DESC": "Stipend",
+    "CD_VAL": "STP"
+  },
+  {
+    "CD_DESC": "Tuition",
+    "CD_VAL": "TUT"
+  }
+]

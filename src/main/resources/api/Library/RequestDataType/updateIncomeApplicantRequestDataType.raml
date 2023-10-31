@@ -1,0 +1,26 @@
+#%RAML 1.0 Library
+types:
+  input:
+    type: object
+    properties:
+      customerNo:
+        type: integer
+        required: true
+      fileNo:
+        type: integer
+        required: true
+      considerationPercentage:
+        type: integer
+        required: true
+      appraisedIncome:
+        type: integer
+        required: true
+      rowSrNo:
+        type: integer
+        required: false
+      updatedBy:
+        type: string
+        required: true
+      updatedOn:
+        type: string
+        required: false

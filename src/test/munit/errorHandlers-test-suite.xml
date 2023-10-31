@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+	xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="hl-sys-oracle-income-applicantDetails-v1-test-suite.xml" />
+	<munit:test
+		name="hl-sys-oracle-income-applicantDetails-v1-test-suite-get:\healthCheck:hl-sys-oracle-income-applicantDetails-v1-configTest"
+		doc:id="3beb2bd5-1174-496b-8cb9-c10870fc7138" description="Test">
+		<munit:execution>
+			<flow-ref
+				doc:name="Flow-ref to get:\healthCheck:hl-sys-oracle-income-applicantDetails-v1-config"
+				doc:id="3d5ac429-78c5-42d3-8f28-d3c3e3223c3f"
+				name="get:\healthCheck:hl-sys-oracle-income-applicantDetails-v1-config" />
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that
+				doc:name="Assert that" doc:id="80725f10-b438-48a7-b5d7-3fc788143558"
+				is="#[MunitTools::notNullValue()]"
+				expression="#[! isEmpty(payload)]" />
+		</munit:validation>
+	</munit:test>
+	<munit:test
+		name="hl-sys-oracle-income-applicantDetails-v1-test-suite-hl-sys-oracle-income-applicantDetails-v1-mainTest"
+		doc:id="20b4a0fd-6e2d-48d3-988a-c10a176c4b94" description="Test">
+		<munit:behavior>
+			<munit-tools:mock-when doc:name="Mock when"
+				doc:id="bca24684-67ca-486d-823d-c460efd9b14d"
+				processor="apikit:router">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute
+						whereValue="hl-sys-oracle-income-applicantDetails-v1-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return>
+					<munit-tools:payload
+						value='#[{&#10;	"testId": "12345"&#10;}]' />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution>
+			<flow-ref doc:name="Flow-ref to hl-sys-oracle-income-applicantDetails-v1-main"
+				doc:id="5e280010-ab39-44a2-95b7-79dcdc6580d8"
+				name="hl-sys-oracle-income-applicantDetails-v1-main" />
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that
+				doc:name="Assert that" doc:id="4c2fa526-8681-4d64-a898-ed491a31be5f"
+				expression="#[! isEmpty(payload)]"
+				is="#[MunitTools::notNullValue()]" />
+		</munit:validation>
+	</munit:test>
+	<munit:test
+		name="hl-sys-oracle-income-applicantDetails-v1-test-suite-hl-sys-oracle-income-applicantDetails-v1-mainTest404NotFound"
+		doc:id="adfbae9d-da6c-48a9-b44f-5d503aa45a8c" description="Test"
+		expectedErrorType="APIKIT:NOT_FOUND">
+		<munit:behavior>
+			<munit-tools:mock-when doc:name="Mock when"
+				doc:id="6ced1e7b-c12d-4ad5-abfd-37ce0963b671"
+				processor="apikit:router">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute
+						whereValue="hl-sys-oracle-income-applicantDetails-v1-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return>
+					<munit-tools:error typeId="APIKIT:NOT_FOUND" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution>
+			<flow-ref doc:name="Flow-ref to hl-sys-oracle-income-applicantDetails-v1-main"
+				doc:id="421e8ca9-4c1e-432b-b4e9-4f838252f551"
+				name="hl-sys-oracle-income-applicantDetails-v1-main" />
+		</munit:execution>
+	</munit:test>
+	<munit:test
+		name="hl-sys-oracle-income-applicantDetails-v1-test-suite-hl-sys-oracle-income-applicantDetails-v1-mainTest400BadRequest"
+		doc:id="8200139b-0006-41ca-9ea1-76c4ee8b4a90" description="Test"
+		expectedErrorType="APIKIT:BAD_REQUEST">
+		<munit:behavior>
+			<munit-tools:mock-when doc:name="Mock when"
+				doc:id="9cd161fd-181b-4b55-9d43-956d75c57de4"
+				processor="apikit:router">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute
+						whereValue="hl-sys-oracle-income-applicantDetails-v1-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return>
+					<munit-tools:error typeId="APIKIT:BAD_REQUEST" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution>
+			<flow-ref doc:name="Flow-ref to hl-sys-oracle-income-applicantDetails-v1-main"
+				doc:id="2ac106f7-4be3-4f85-9340-3351b9aa7e89"
+				name="hl-sys-oracle-income-applicantDetails-v1-main" />
+		</munit:execution>
+	</munit:test>
+	<munit:test
+		name="hl-sys-oracle-income-applicantDetails-v1-test-suite-hl-sys-oracle-income-applicantDetails-v1-mainTest405MethodNotAllower"
+		doc:id="34d17bf7-62b3-4a2f-b482-c600985b7393" description="Test"
+		expectedErrorType="APIKIT:METHOD_NOT_ALLOWED">
+		<munit:behavior>
+			<munit-tools:mock-when doc:name="Mock when"
+				doc:id="fb8d58ef-bdd3-4aed-8da7-29a2eec13ba3"
+				processor="apikit:router">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute
+						whereValue="hl-sys-oracle-income-applicantDetails-v1-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return>
+					<munit-tools:error
+						typeId="APIKIT:METHOD_NOT_ALLOWED" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution>
+			<flow-ref doc:name="Flow-ref to hl-sys-oracle-income-applicantDetails-v1-main"
+				doc:id="1ccf9c6d-c2c4-4321-bde1-111d2cfbab99"
+				name="hl-sys-oracle-income-applicantDetails-v1-main" />
+		</munit:execution>
+	</munit:test>
+	<munit:test
+		name="hl-sys-oracle-income-applicantDetails-v1-test-suite-hl-sys-oracle-income-applicantDetails-v1-mainTest415UNSUPPORTED_MEDIA_TYPE"
+		doc:id="9694192c-987a-4c4b-b595-212c6140fb7d" description="Test"
+		expectedErrorType="APIKIT:UNSUPPORTED_MEDIA_TYPE">
+		<munit:behavior>
+			<munit-tools:mock-when doc:name="Mock when"
+				doc:id="e7b95e3d-4acb-46c2-8412-4cdc7ef2e268"
+				processor="apikit:router">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute
+						whereValue="hl-sys-oracle-income-applicantDetails-v1-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return>
+					<munit-tools:error
+						typeId="APIKIT:UNSUPPORTED_MEDIA_TYPE" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution>
+			<flow-ref doc:name="Flow-ref to hl-sys-oracle-income-applicantDetails-v1-main"
+				doc:id="17e9e144-ce23-4ab7-88a7-9b388453029b"
+				name="hl-sys-oracle-income-applicantDetails-v1-main" />
+		</munit:execution>
+	</munit:test>
+	<munit:test
+		name="hl-sys-oracle-income-applicantDetails-v1-test-suite-hl-sys-oracle-income-applicantDetails-v1-mainTest406NOT_IMPLEMENTED"
+		doc:id="48582063-40d1-4f8e-8300-4dee05f8984a" description="Test"
+		expectedErrorType="APIKIT:NOT_IMPLEMENTED">
+		<munit:behavior>
+			<munit-tools:mock-when doc:name="Mock when"
+				doc:id="c87b5f30-2720-455d-ad5c-b5f12b5696d3"
+				processor="apikit:router">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute
+						whereValue="hl-sys-oracle-income-applicantDetails-v1-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return>
+					<munit-tools:error
+						typeId="APIKIT:NOT_IMPLEMENTED" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution>
+			<flow-ref doc:name="Flow-ref to hl-sys-oracle-income-applicantDetails-v1-main"
+				doc:id="e3b8d71f-6f9f-4e14-850a-b74af685c1f1"
+				name="hl-sys-oracle-income-applicantDetails-v1-main" />
+		</munit:execution>
+	</munit:test>
+	<munit:test
+		name="hl-sys-oracle-income-applicantDetails-v1-test-suite-hl-sys-oracle-income-applicantDetails-v1-mainTestHTTP:CONNECTIVITY"
+		doc:id="82e95079-e037-4260-9595-38cebfb4dfbd" description="Test"
+		expectedErrorType="HTTP:CONNECTIVITY">
+		<munit:behavior>
+			<munit-tools:mock-when doc:name="Mock when"
+				doc:id="88045242-7731-4b43-874e-2fab62a1db3f"
+				processor="apikit:router">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute
+						whereValue="hl-sys-oracle-income-applicantDetails-v1-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return>
+					<munit-tools:error typeId="HTTP:CONNECTIVITY" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution>
+			<flow-ref doc:name="Flow-ref to hl-sys-oracle-income-applicantDetails-v1-main"
+				doc:id="5eeb6c6d-e9e9-408e-af89-50530f54ac0f"
+				name="hl-sys-oracle-income-applicantDetails-v1-main" />
+		</munit:execution>
+	</munit:test>
+	<munit:test
+		name="hl-sys-oracle-income-applicantDetails-v1-test-suite-hl-sys-oracle-income-applicantDetails-v1-mainTestHTTP:TIMEOUT"
+		doc:id="9d117b4d-8730-460d-93f4-512f46dd485f" description="Test"
+		expectedErrorType="HTTP:TIMEOUT">
+		<munit:behavior>
+			<munit-tools:mock-when doc:name="Mock when"
+				doc:id="5a11c69f-b3f1-4938-aa32-23987324a36e"
+				processor="apikit:router">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute
+						whereValue="hl-sys-oracle-income-applicantDetails-v1-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return>
+					<munit-tools:error typeId="HTTP:TIMEOUT" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution>
+			<flow-ref doc:name="Flow-ref to hl-sys-oracle-income-applicantDetails-v1-main"
+				doc:id="ac42f77e-3caf-4764-b850-18601fca986d"
+				name="hl-sys-oracle-income-applicantDetails-v1-main" />
+		</munit:execution>
+	</munit:test>
+	<munit:test name="hl-sys-oracle-income-applicantDetails-v1-test-suite-hl-sys-oracle-income-applicantDetails-v1-mainTestHTTP:UNAUTHORIZED" doc:id="4a973fc9-d82f-48db-a205-0b26fb8456dc" description="Test" expectedErrorType="HTTP:UNAUTHORIZED">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="14e76e7f-6d54-4c42-8a5b-255ef8aa91a5" processor="apikit:router">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="hl-sys-oracle-income-applicantDetails-v1-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="HTTP:UNAUTHORIZED" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to hl-sys-oracle-income-applicantDetails-v1-main" doc:id="37dcf89a-4984-4ac7-a327-f2759f6f45d5" name="hl-sys-oracle-income-applicantDetails-v1-main"/>
+		</munit:execution>
+	</munit:test>
+	<munit:test name="hl-sys-oracle-income-applicantDetails-v1-test-suite-hl-sys-oracle-income-applicantDetails-v1-mainTestHTTP:BAD_REQUEST" doc:id="48d0d418-2122-455f-9dba-187cec64477d" description="Test" expectedErrorType="HTTP:BAD_REQUEST">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="1b867f6c-40ee-47cb-8054-29d22602d0d5" processor="apikit:router">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="hl-sys-oracle-income-applicantDetails-v1-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="HTTP:BAD_REQUEST" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to hl-sys-oracle-income-applicantDetails-v1-main" doc:id="9d87bf1b-e903-4551-9ce6-11d9f4de66e9" name="hl-sys-oracle-income-applicantDetails-v1-main"/>
+		</munit:execution>
+	</munit:test>
+	<munit:test name="hl-sys-oracle-income-applicantDetails-v1-test-suite-hl-sys-oracle-income-applicantDetails-v1-mainTestHTTP:INTERNAL_SERVER_ERROR" doc:id="5d9598a7-27b6-4a89-8ccf-471be7b940ca" description="Test" expectedErrorType="HTTP:INTERNAL_SERVER_ERROR">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="d583c3fe-4499-46d5-b5e5-a8a26282ba41" processor="apikit:router">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="hl-sys-oracle-income-applicantDetails-v1-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="HTTP:INTERNAL_SERVER_ERROR" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to hl-sys-oracle-income-applicantDetails-v1-main" doc:id="7e379f41-10bb-4aea-b14d-da6cb6f5ee20" name="hl-sys-oracle-income-applicantDetails-v1-main"/>
+		</munit:execution>
+	</munit:test>
+	<munit:test name="hl-sys-oracle-income-applicantDetails-v1-test-suite-hl-sys-oracle-income-applicantDetails-v1-mainTestHTTP:ODB:BAD_REQUEST" doc:id="470e4432-ab7c-4740-8dde-52db49485317" description="Test" expectedErrorType="ODB:BAD_REQUEST">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="96bf5da5-daeb-49af-9d14-cc7f34222894" processor="apikit:router">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="hl-sys-oracle-income-applicantDetails-v1-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="ODB:BAD_REQUEST" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to hl-sys-oracle-income-applicantDetails-v1-main" doc:id="3eec91c0-7cf8-48ad-a6d4-a4583a244e28" name="hl-sys-oracle-income-applicantDetails-v1-main"/>
+		</munit:execution>
+	</munit:test>
+	<munit:test name="hl-sys-oracle-income-applicantDetails-v1-test-suite-hl-sys-oracle-income-applicantDetails-v1-mainTestHTTP:DB:ANY" doc:id="c48a0f98-4a7e-4c59-b33a-f2fad410f4fe" description="Test" expectedErrorType="ANY">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="d3ff0b01-9fa7-43e6-be1d-1b31c3910161" processor="apikit:router">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="hl-sys-oracle-income-applicantDetails-v1-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="ANY" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to hl-sys-oracle-income-applicantDetails-v1-main" doc:id="81f3256e-c13b-452a-af2f-d83a42f0c10c" name="hl-sys-oracle-income-applicantDetails-v1-main"/>
+		</munit:execution>
+	</munit:test>
+		
+</mule>

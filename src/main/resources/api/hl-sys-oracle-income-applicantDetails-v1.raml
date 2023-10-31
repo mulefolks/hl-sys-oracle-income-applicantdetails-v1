@@ -1,0 +1,121 @@
+#%RAML 1.0
+title: hl-sys-oracle-income-applicantDetails-v1
+
+version: v1.0
+baseUri: http://localhost:8089/oracappl/v1/api/*
+protocols:
+  - HTTP
+mediaType: 
+- application/json
+resourceTypes:
+  getCollection: !include Resource/getResourceType.raml
+  postCollection: !include /Resource/postCollectionResource.raml
+
+uses:
+  RespUpdExtractionNetIncome: /Library/ResponseDataType/updateExtractionNetIncomeResponseDataType.raml
+  ReqUpdExtractionNetIncome: /Library/RequestDataType/updateExtractionNetIncomeRequestDataType.raml
+  errorDataType: Library/ErrorDataType/ErrorDataType .raml
+  RespgetIncomeApplicants: /Library/ResponseDataType/getIncomeApplicantsResponseDataType.raml
+  RespgetApplicantIncomeList: /Library/ResponseDataType/getApplicantIncomeListResponseDataType.raml
+  ReqUpdateIncomeStatus: /Library/RequestDataType/updateIncomeStatusRequestDataType.raml
+  RespUpdateIncomeStatus: /Library/ResponseDataType/updateIncomeStatusResponseDataType.raml
+  RequpdateIncomeApplicant: /Library/RequestDataType/updateIncomeApplicantRequestDataType.raml
+  RespupdateIncomeApplicant: /Library/ResponseDataType/updateIncomeApplicantResponseDataType.raml
+  ReqUpdateMerchantInfo: /Library/RequestDataType/updateMerchantInfoReqDataType.raml
+  ResUpdateMercahntInfo: /Library/ResponseDataType/updateMerchantInfoResponseDataType.raml
+  RespgetSourceOfIncome: /Library/ResponseDataType/getSourceOfIncomeRespDataType.raml
+  RespgetAdditionalSourceDetails: /Library/ResponseDataType/getAdditionalSourceDetailsRespDataType.raml
+  
+
+traits:
+  authHeaders: !include Traits/Headers/Headers.raml
+  getIncomeApplicantsQueryParams: !include /Traits/QueryParams/getIncomeApplicantsQueryParams.raml
+  getApplicantIncomeListQueryParams: !include /Traits/QueryParams/getApplicantIncomeListQueryParams.raml
+  
+  getSourceOfIncomeQueryParams: !include /Traits/QueryParams/getSourceOfIncomeQueryParams.raml
+
+  getAdditionalSourceDetailsQueryParams: !include /Traits/QueryParams/getAdditionalSourceDetailsQueryParams.raml
+
+/incomeApplicants:
+  description: This Resource Retrives the Details based on the input Parameters.
+  is:
+    - authHeaders
+    - getIncomeApplicantsQueryParams
+  type:
+    getCollection:
+      errors-schema: errorDataType.error
+      response-schema: RespgetIncomeApplicants.output
+      response-example: !include /Examples/responseExample/successResponse/getIncomeApplicantsResponseExpample.json 
+
+/applicantIncomeList:
+  description: This Resource Retrives the Details based on the input Parameters.
+  is:
+    [authHeaders,getApplicantIncomeListQueryParams]
+  type:
+    getCollection:
+      errors-schema: errorDataType.error
+      response-schema: RespgetApplicantIncomeList.output
+      response-example: !include /Examples/responseExample/successResponse/getApplicantIncomeList.json
+
+/incomeStatusUpdation:
+  description: This Resource updates the Records based on the input Parameters.
+  is:
+    - authHeaders
+  type:
+    postCollection:
+      error-schema: errorDataType.error
+      request-schema: ReqUpdateIncomeStatus.input
+      request-example: !include /Examples/requestExample/updateIncomeStatusrequest.json
+      response-schema: RespUpdateIncomeStatus.output
+      response-example: !include /Examples/responseExample/successResponse/updateIncomeStatusResponse.json
+  
+/incomeApplicantUpdation:
+  description: This Resource updates the Records based on the input Parameters.
+  is:
+    - authHeaders
+  type:
+    postCollection:
+      error-schema: errorDataType.error
+      request-schema: RequpdateIncomeApplicant.input
+      request-example: !include /Examples/requestExample/updateIncomeApplicantrequest.json
+      response-schema: RespupdateIncomeApplicant.output
+      response-example: !include /Examples/responseExample/successResponse/updateIncomeApplicantResponse.json 
+
+
+/sourceOfIncome:
+  description: This Resource Retrives the Details based on the input Parameters.
+  is:
+    - authHeaders
+    - getSourceOfIncomeQueryParams
+  type:
+    getCollection:
+      errors-schema: errorDataType.error
+      response-schema: RespgetSourceOfIncome.output
+      response-example: !include /Examples/responseExample/successResponse/getSourceOfIncomeResponse.json
+
+/additionalSourceDetails:
+  description: This Resource Retrives the Details based on the input Parameters.
+  is:
+    - authHeaders
+    - getAdditionalSourceDetailsQueryParams
+  type:
+    getCollection:
+      errors-schema: errorDataType.error
+      response-schema: RespgetAdditionalSourceDetails.output
+      response-example: !include /Examples/responseExample/successResponse/getAdditionalSourceDetailsResponse.json
+
+/healthCheck:
+  get:
+    queryParameters:
+      health:
+        type: string
+        required: false           
+    responses:
+      200:
+        body:
+          application/json:
+            example:
+              {
+                "timestamp": "(now()>>'IST')",
+                "Message": "The Api is Active"
+              }

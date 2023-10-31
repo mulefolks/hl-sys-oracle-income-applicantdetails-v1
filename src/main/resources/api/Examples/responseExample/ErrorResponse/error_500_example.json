@@ -1,0 +1,13 @@
+{
+    "success": false,
+    "timestamp": "2022-09-30T11:54:58.544+05:30",
+    "correlationId": "ghh",
+    "appName": "Ilps",
+    "statusCode": 500,
+"errors":[
+    {
+    "error_code": "500",
+    "error_message" : "Internal Server Error"
+    }
+  ]
+}

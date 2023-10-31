@@ -1,0 +1,12 @@
+{
+"success": false,
+    "timestamp": "2022-09-30T11:54:58.544+05:30",
+    "correlationId": "ghh",
+    "appName": "Ilps",
+    "statusCode": 408,
+"errors":[
+{
+"error_code": "408",
+"error_message" : "Time Out"
+}
+]}

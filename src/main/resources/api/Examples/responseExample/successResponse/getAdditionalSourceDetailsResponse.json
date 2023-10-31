@@ -1,0 +1,24 @@
+{
+  "success": "true",
+  "timestamp": "2022-09-30T11:54:58.544+05:30",
+  "correlationId": "abcdef",
+  "appName": "ilps",
+  "statusCode": 101,
+  "statusMessage": "Success",
+  "Response": [
+    {
+      "norms": 1234,
+      "isAdditionalDataPresent": true,
+      "AdditionalData": [
+        {
+          "keyCode": "",
+          "keyDesc": ""
+        },
+        {
+          "keyCode": "",
+          "keyDesc": ""
+        }
+      ]
+    }
+  ]
+}

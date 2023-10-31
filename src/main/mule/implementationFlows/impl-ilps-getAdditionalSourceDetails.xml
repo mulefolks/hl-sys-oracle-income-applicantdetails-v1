@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:json-logger="http://www.mulesoft.org/schema/mule/json-logger" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/mule/json-logger/current/mule-json-logger.xsd">
+	<sub-flow name="impl-ilps-getAdditionalDetailsSub_Flow" doc:id="f1412667-e41d-4ec1-8153-6cfbeaefe6e9" >
+		<logger level="INFO" doc:name="additionalSourceDetailsSubFLowStartLogger" doc:id="62422ba2-e336-4507-94ac-8867afbfc4d8" message='Get hdfc-ilps-additionalSourceDetails-sys-api flow started::CorrelationId::#[vars.vTrackingHeader.correlationId]'/>
+		<json-logger:logger doc:name="getAdditionalDetails Database Input Logger" doc:id="d23ee948-3e2e-4ab1-a40c-210d22095052" config-ref="JSON_Logger_Config" message='#["INFO: getAdditionalDetails Database input for CorrelationId :: " ++ (vars.vTrackingHeader.correlationId as String default "")]'>
+			<json-logger:content ><![CDATA[#[output application/json
+
+---
+payload]]]></json-logger:content>
+		</json-logger:logger>
+		<choice doc:name="Choice" doc:id="ca270c39-653c-4023-9e9a-32740a5ba3fd" >
+			<when expression="#[! isEmpty(attributes.queryParams.fileNo) and (! isEmpty(attributes.queryParams.cdVal))]">
+				<db:stored-procedure doc:name="Stored procedure for additionalSourceDetails" doc:id="41261504-2629-4f63-a697-d1b0cea51450" config-ref="Database_Config_ilpsDB">
+					<db:sql ><![CDATA[#[%dw 2.0
+output application/json
+---
+"{call leap.pkg_leap.pgetincomesourceaddinfo(" ++ (attributes.queryParams.fileNo as Number default Null) ++",'"++ (attributes.queryParams.cdVal as String default "") ++"',"++ (attributes.queryParams.custNo as Number  default Null) ++",:oincnorms,:oadditionalinfo,:ocursor,:osubmenudesc)}"]]]></db:sql>
+					<db:output-parameters >
+						<db:output-parameter key="oincnorms" type="FLOAT" />
+						<db:output-parameter key="oadditionalinfo" type="VARCHAR" />
+						<db:output-parameter key="ocursor" type="REF_CURSOR" />
+						<db:output-parameter key="osubmenudesc" type="VARCHAR" />
+					</db:output-parameters>
+				</db:stored-procedure>
+				<json-logger:logger doc:name="getAdditionalDetails Database Output Logger" doc:id="4701a02e-ecac-4f4b-b285-3960be973c46" config-ref="JSON_Logger_Config" message='#["INFO: getAdditionalDetails Database output for CorrelationId :: " ++ (vars.vTrackingHeader.correlationId as String default "")]'>
+					<json-logger:content ><![CDATA[#[output application/json
+---
+payload]]]></json-logger:content>
+				</json-logger:logger>
+				<ee:transform doc:name="DW:output of hdfc-additionalSourceDetails -sys-api" doc:id="1ba08e26-2411-40e9-a476-33475c8dd89a" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+if((not isEmpty(payload)))
+({"success": true, "timestamp": (now()>>'IST') as String {format: "dd-MM-yyyy hh:mm:ss a"}, 
+"correlationId": vars.vTrackingHeader.correlationId, 
+"appName": vars.vTrackingHeader.appName, 
+"statusCode": 101,
+"statusMsg": "Success",
+"Response":{
+	"norms": payload.oincnorms,
+    "isAdditionalDataPresent": payload.oadditionalinfo,
+    "AdditionalData": payload.ocursor map {
+        "keycode": $.MONTH_YEAR,
+        "keydesc": $.AMOUNT
+    } distinctBy($)
+}
+} )
+else({"success": true, 
+ "timestamp":(now()>>'IST') as String {format: "dd-MM-yyyy hh:mm:ss a"}, 
+"correlationId": vars.vTrackingHeader.correlationId, 
+"appName": vars.vTrackingHeader.appName, 
+"statusCode":102, 
+"statusMsg": "Records Not Found"})]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</when>
+			<otherwise >
+				<ee:transform doc:name="Dw: DefaultTransform Message" doc:id="a82f65bf-09b4-4616-b1e4-88adc0612b26" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"success": false,
+	"timestamp": (now()>>'IST') as String {format: "dd-MM-yyyy hh:mm:ss a"},
+	"correlationId": attributes.headers.correlationId,
+	"appName": attributes.headers.appName,
+	"statusCode": "103",
+	"statusMsg": "InValid Search criteria"
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</otherwise>
+		</choice>
+		<logger level="INFO" doc:name="additionalSourceDetails hdfc-ilps-master-sys-api flow Ended" doc:id="569812ec-0b7f-4728-8276-b3d9edbffd94" message=" hdfc-additionalSourceDetails-sys-api flow ended::CorrelationId::#[vars.vTrackingHeader.correlationId]"/>
+	</sub-flow>
+</mule>

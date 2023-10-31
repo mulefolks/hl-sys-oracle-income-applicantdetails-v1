@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:json-logger="http://www.mulesoft.org/schema/mule/json-logger"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd 
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/mule/json-logger/current/mule-json-logger.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
+	<sub-flow name="impl-ilps-sourceOfIncomeSub_Flow" doc:id="c32d24e1-0d98-48f2-b4e4-3dacb529f07d" >
+		<logger level="INFO" doc:name="ilps_sourceOfIncome_Flow_Start_Logger" doc:id="df8eb92c-539f-414a-889b-f7d3c5a51d14" message='"info: Implementation of ilps-sourceOfIncome-subFlow Start:: correrlationId: #[vars.vTrakingHeader.correlationId]'/>
+		<json-logger:logger doc:name="getsourceOfIncomeDBInputLogger" doc:id="fb944a33-76cd-4742-a2ff-e18c914bd486" config-ref="JSON_Logger_Config" message='#["INFO: sourceOfIncome subFlow DB Input for correaltionId :: " ++ (vars.vTrackingHeader.correlationId as String default "")]'>
+					<json-logger:content><![CDATA[#[output application/java
+---
+p('query.sourceOfIncome')]]]></json-logger:content>
+				</json-logger:logger>
+		<choice doc:name="Choice" doc:id="20a6fea8-c0af-4b2e-86e8-8eed6fc78b83" >
+			<when expression="#[(! isEmpty(attributes.queryParams.codeType))]">
+				<db:select doc:name="sourceOfIncomeCall" doc:id="9d437ff8-a52b-4428-98f9-449f70832f60" config-ref="Database_Config_ilpsDB">
+					<db:sql ><![CDATA[${query.sourceOfIncome}]]></db:sql>
+					<db:input-parameters ><![CDATA[#[{
+	"codeType": upper(attributes.queryParams.codeType) as String
+}]]]></db:input-parameters>
+				</db:select>
+				<json-logger:logger doc:name="getsourceOfIncomeDBOutputLogger" doc:id="4d6fb027-d071-4413-9c29-89a4bcb6fa11" config-ref="JSON_Logger_Config" message='#["INFO: getsourceOfIncome DB Output for CorrelationId :: " ++ (vars.vTrackingHeader.correlationId as String default "")]'>
+					<json-logger:content ><![CDATA[#[output application/json
+
+---
+payload]]]></json-logger:content>
+				</json-logger:logger>
+				<ee:transform doc:name="DW: FinalPayload" doc:id="a5aaa2a0-cae1-4765-ab23-39a464622fb6" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+if((not isEmpty(payload)))
+({"success": true,
+	"timestamp": (now()>>'IST') as String {format:"dd-MM-yyyy hh:mm:ss a"},
+	"correlationId": vars.vTrackingHeader.correlationId, 
+	"appName": vars.vTrackingHeader.appName, 
+	"statusCode": 101, 
+	"statusMsg": "Success",
+	"GetSourceOfIncomeDetails": payload map {
+    "cdDesc": $.CD_DESC,
+    "cdVal": $.CD_VAL
+}
+} )
+else({"success": true,
+"timestamp": (now()>>'IST') as String {format:"dd-MM-yyyy hh:mm:ss a"}, 
+"correlationId": vars.vTrackingHeader.correlationId,
+ "appName": vars.vTrackingHeader.appName, 
+ "statusCode": 102, 
+ "statusMsg": "Records Not Found"})
+]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</when>
+			<otherwise >
+				<ee:transform doc:name="Dw:Default Transform Message" doc:id="be392c2a-649f-403f-ad88-a03f44b038d8" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"timestamp": (now()>>'IST') as String {format: "dd-MM-yyyy hh:mm:ss a"},
+	"correlationId": attributes.headers.correlationId,
+	"appName": attributes.headers.appName,
+	"statusCode": "103",
+	"statusMsg": "Invalid Search Criteria"
+}
+]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</otherwise>
+		</choice>
+		<logger level="INFO" doc:name="ilps_sourceOfIncome_Flow_End_Logger" doc:id="40b099d7-a396-4cad-ba8a-9bc2336cfab4" message='"info: Implementation of ilps-sourceOfIncome-subFlow End:: correrlationId: #[vars.vTrakingHeader.correlationId]'/>
+	</sub-flow>
+	</mule>

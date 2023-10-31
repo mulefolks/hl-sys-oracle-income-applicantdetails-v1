@@ -1,0 +1,12 @@
+query:
+  sourceOfIncome: "Select Cd_Val, New_Process_Desc Cd_Desc
+        From Sy_Ilps_Cd_Master
+        Where Cd_Type = :codeType
+        And (Nvl(Cd_Char, 'X') != 'INVALID' And Nvl(Invalid, 'N') != 'Y')
+        And Nvl(New_Process_Flag, 'N') = 'Y'
+        Order By 1"
+    
+  incomeApplicantUpdation: "Update Cas.Income_Appraised_Details t Set t.Consi =:considerationPercentage, t.Cust_Appraised_Inc =:appraisedIncome, t.Updated_By = :updatedBy Where t.File_No =:fileNo And t.cust_No =:customerNo"
+  
+  incomeStatusUpdation: "{call leap.pkg_leap.p_cas_ins_income(:i_file_no,:i_user,:i_tot_income_amt,:i_income_ver,:o_return_cd,:o_return_msg)}"
+  

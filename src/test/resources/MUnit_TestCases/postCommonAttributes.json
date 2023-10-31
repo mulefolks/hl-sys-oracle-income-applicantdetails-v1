@@ -1,0 +1,17 @@
+{
+  "headers": {
+    "correlationid": "jbndeiuu",
+    "appname": "clpsLac",
+    "client_secret": "C542Bb27a3a749BeBd2F460C6B7aF459",
+    "client_id": "ff85678ad41d4884ad4a2ae7d580eeb0",
+    "x-correlation-id": "jkndkjndjfkldlkfkl",
+    "x-api-key": "djjdjjjdjd",
+    "user-agent": "PostmanRuntime/7.31.0",
+    "accept": "*/*",
+    "postman-token": "a45d2c41-c2e2-45d0-a8a2-96e01a9fff3e",
+    "host": "localhost:8107",
+    "accept-encoding": "gzip, deflate, br",
+    "connection": "keep-alive"
+  }
+  
+}
